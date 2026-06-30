@@ -1,4 +1,4 @@
-# g1mishra.dev (v2) 🚀
+# jeevanmishra.in (v2) 🚀
 
 This repository houses the second iteration of my personal portfolio and product showcase. Built to be modern, incredibly fast, and lightweight, it acts as a central hub for my freelance/contract work, solo-built apps (like JaapMitra), and independent projects.
 
