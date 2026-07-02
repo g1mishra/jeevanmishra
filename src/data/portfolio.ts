@@ -134,7 +134,7 @@ export const apps: App[] = [
     tags: ["React Native", "Next.js", "Expo"],
     links: {
       playStore: "https://play.google.com/store/apps/details?id=com.g1mishra.saarthi",
-      landing: "https://saarthi.jeevanmishra.in",
+      landing: "https://trysaarthi.in/",
     },
   },
 ];
