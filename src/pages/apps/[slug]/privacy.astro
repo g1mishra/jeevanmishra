@@ -1,0 +1,258 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Nav from "../../../components/Nav.astro";
+import Footer from "../../../components/Footer.astro";
+import { apps, meta } from "../../../data/portfolio";
+
+export function getStaticPaths() {
+  return apps
+    .filter((app) => app.privacy)
+    .map((app) => ({
+      params: { slug: app.slug },
+      props: { app, privacy: app.privacy! },
+    }));
+}
+
+const { app, privacy } = Astro.props;
+
+const effectiveDate = new Date(privacy.effective).toLocaleDateString("en-GB", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+let section = 0;
+const n = () => String(++section).padStart(2, "0");
+---
+
+<Layout
+  title={`Privacy Policy — ${app.name}`}
+  description={`Privacy policy for the ${app.name} mobile app by ${meta.name}. ${privacy.summary}`}
+>
+  <Nav />
+
+  <main class="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-20" transition:animate="slide">
+    <a
+      class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber transition-colors hover:text-amber-light"
+      href={`/apps/${app.slug}`}>← {app.name}</a
+    >
+
+    <h1 class="mt-10 font-display text-5xl font-semibold leading-tight text-ink sm:text-6xl">
+      Privacy Policy
+    </h1>
+    <p class="mt-4 text-xl text-muted">
+      for <strong class="font-medium text-ink">{app.name}</strong>
+      {app.packageName && <span class="font-mono text-sm">({app.packageName})</span>}
+    </p>
+    <p class="mt-2 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+      Effective {effectiveDate}
+    </p>
+
+    <div class="mt-10 rounded-2xl border border-amber/20 bg-amber-light p-6 text-lg leading-8 text-ink">
+      <p class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber">
+        In short
+      </p>
+      <p class="mt-3">{privacy.summary}</p>
+    </div>
+
+    <div class="mt-16 space-y-14 text-lg leading-8 text-muted">
+      <section>
+        <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+          <span class="text-amber">{n()}.</span> Who this policy is from
+        </h2>
+        <p class="mt-4">
+          {app.name} is built and published by {meta.name}, an independent developer based in
+          India. This policy explains what the app does and does not do with information when
+          you use it. In it, "I" and "my" refer to the developer, and "the app" refers to
+          {" "}{app.name}.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+          <span class="text-amber">{n()}.</span> Information I collect
+        </h2>
+        <p class="mt-4">
+          {
+            privacy.collectsPersonalData
+              ? "The app collects the personal information described below."
+              : "I do not collect, store, or transmit any personal information about you. The app has no analytics, no crash reporting that identifies you, no tracking of your behaviour, and no servers of mine that it talks to."
+          }
+        </p>
+        {
+          !privacy.requiresAccount && (
+            <p class="mt-4">
+              There is no account and no sign-in. You are never asked for a name, an email
+              address, a phone number, or any other identifying detail.
+            </p>
+          )
+        }
+        {
+          privacy.worksOffline && (
+            <p class="mt-4">
+              The app runs entirely on your device. Nothing you do inside it is sent anywhere
+              for me to see.
+            </p>
+          )
+        }
+      </section>
+
+      <section>
+        <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+          <span class="text-amber">{n()}.</span> Data stored on your device
+        </h2>
+        <p class="mt-4">
+          The app saves the following to your device's own storage so it can work between
+          sessions:
+        </p>
+        <ul class="mt-6 space-y-3 pl-5">
+          {privacy.onDeviceData.map((item) => (
+            <li class="list-disc">{item}</li>
+          ))}
+        </ul>
+        <p class="mt-4">
+          This data never leaves your device and is not readable by me or by anyone else. It is
+          removed when you clear the app's data or uninstall the app.
+        </p>
+      </section>
+
+      {
+        privacy.advertising && (
+          <section>
+            <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+              <span class="text-amber">{n()}.</span> Advertising
+            </h2>
+            <p class="mt-4">{privacy.advertising.note}</p>
+            <p class="mt-4">
+              You can limit this at any time from your device settings. On Android, open{" "}
+              <strong class="font-medium text-ink">
+                Settings → Privacy → Ads
+              </strong>{" "}
+              to delete or reset your Advertising ID, or to opt out of ad personalisation
+              entirely. The app keeps working normally either way.
+            </p>
+            <p class="mt-4">
+              How {privacy.advertising.network} handles this information is governed by its own
+              policy, which you can read here:{" "}
+              <a
+                class="text-amber underline underline-offset-4 transition-colors hover:text-ink"
+                href={privacy.advertising.policyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {privacy.advertising.policyUrl}
+              </a>
+              .
+            </p>
+          </section>
+        )
+      }
+
+      {
+        privacy.permissions.length > 0 && (
+          <section>
+            <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+              <span class="text-amber">{n()}.</span> Permissions the app requests
+            </h2>
+            <ul class="mt-6 space-y-5">
+              {privacy.permissions.map((permission) => (
+                <li>
+                  <strong class="font-medium text-ink">{permission.name}</strong>
+                  <span class="block">{permission.reason}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        privacy.thirdParties.length > 0 && (
+          <section>
+            <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+              <span class="text-amber">{n()}.</span> Third-party services
+            </h2>
+            <p class="mt-4">
+              The app includes the following third-party services. Each one handles data under
+              its own privacy policy, not mine:
+            </p>
+            <ul class="mt-6 space-y-5">
+              {privacy.thirdParties.map((party) => (
+                <li>
+                  <strong class="font-medium text-ink">{party.name}</strong> — {party.purpose}.
+                  <a
+                    class="ml-1 text-amber underline underline-offset-4 transition-colors hover:text-ink"
+                    href={party.policyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Privacy policy
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      <section>
+        <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+          <span class="text-amber">{n()}.</span> Children's privacy
+        </h2>
+        <p class="mt-4">
+          {
+            privacy.childDirected
+              ? "The app is directed at children and is designed to comply with the Google Play Families policy and applicable children's privacy laws."
+              : "The app is not directed at children under 13, and I do not knowingly collect any information from them. Because the app collects no personal information from anyone, it holds nothing belonging to a child. If you believe otherwise, contact me and I will look into it."
+          }
+        </p>
+      </section>
+
+      <section>
+        <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+          <span class="text-amber">{n()}.</span> Keeping and deleting your data
+        </h2>
+        <p class="mt-4">
+          Because I hold no data about you, there is nothing on my side to request, export, or
+          delete. Everything the app saves lives on your device and is entirely under your
+          control: clear the app's storage from your device settings, or uninstall the app, and
+          it is gone for good.
+        </p>
+        {
+          privacy.advertising && (
+            <p class="mt-4">
+              Advertising data held by {privacy.advertising.network} is governed by Google's
+              retention policies and by your Advertising ID settings, described above.
+            </p>
+          )
+        }
+      </section>
+
+      <section>
+        <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+          <span class="text-amber">{n()}.</span> Changes to this policy
+        </h2>
+        <p class="mt-4">
+          If the app changes in a way that affects this policy, I will update this page and move
+          the effective date at the top. Material changes will also be noted in the app's release
+          notes on the Play Store.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+          <span class="text-amber">{n()}.</span> Contact
+        </h2>
+        <p class="mt-4">
+          Questions about this policy, or about the app in general, reach me directly at{" "}
+          <a
+            class="text-amber underline underline-offset-4 transition-colors hover:text-ink"
+            href={`mailto:${meta.email}`}>{meta.email}</a
+          >. I read everything.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

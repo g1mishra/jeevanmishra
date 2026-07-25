@@ -14,13 +14,19 @@ const linkLabels: Record<string, string> = {
   landing: "Landing →",
   live: "Live App →",
 };
+
+// The homepage shows the flagships only. Everything else lives at /apps.
+const featuredApps = apps.filter((app) => app.featured);
 ---
 
 <section id="apps" class="reveal scroll-mt-24 border-b border-border py-16 sm:py-24">
-  <h2 class="mb-10 font-display text-4xl sm:text-5xl font-semibold text-ink">Apps</h2>
-  
+  <div class="mb-10 flex flex-wrap items-baseline justify-between gap-4">
+    <h2 class="font-display text-4xl sm:text-5xl font-semibold text-ink">Apps</h2>
+    <a class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-muted transition-colors hover:text-amber" href="/apps">All apps →</a>
+  </div>
+
   <div class="flex flex-col gap-12">
-    {apps.map((app) => (
+    {featuredApps.map((app) => (
       <article class="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-paper via-paper to-amber-light/30 shadow-sm transition-shadow duration-500 hover:shadow-md group">
         
         <!-- Background glow effect on hover -->

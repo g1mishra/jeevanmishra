@@ -28,11 +28,44 @@ export interface Experience {
   summary: string;
 }
 
+export interface ThirdParty {
+  name: string;
+  purpose: string;
+  policyUrl: string;
+}
+
+/**
+ * Drives the generated privacy policy at /apps/<slug>/privacy.
+ * Only apps whose pages are hosted on this site carry one — apps with their
+ * own domain (JaapMitra, Saarthi) publish their policy there instead.
+ */
+export interface AppPrivacy {
+  effective: string;
+  summary: string;
+  collectsPersonalData: boolean;
+  requiresAccount: boolean;
+  worksOffline: boolean;
+  /** What the app writes to the device, staying on the device. */
+  onDeviceData: string[];
+  advertising: { network: string; policyUrl: string; note: string } | null;
+  permissions: { name: string; reason: string }[];
+  childDirected: boolean;
+  thirdParties: ThirdParty[];
+}
+
 export interface App {
   name: string;
+  slug: string;
+  tagline: string;
   description: string;
   tags: string[];
+  /** Shown in the Apps section of the homepage. Unfeatured apps still get pages. */
+  featured: boolean;
+  status: "live" | "coming-soon";
+  packageName?: string;
+  features?: string[];
   links: Record<string, string>;
+  privacy?: AppPrivacy;
 }
 
 export interface Project {
@@ -119,9 +152,14 @@ export const experience: Experience[] = [
 export const apps: App[] = [
   {
     name: "JaapMitra",
+    slug: "jaapmitra",
+    tagline: "A digital mala counter for daily naam jaap.",
     description:
       "A digital mala counter for daily naam jaap, built for people who actually do the practice. Volume button counting, custom malas, streaks, smart reminders. No account, no ads, works offline. Built solo.",
     tags: ["React Native", "Expo", "SQLite"],
+    featured: true,
+    status: "live",
+    packageName: "com.g1mishra.jaapmitra",
     links: {
       playStore: "https://play.google.com/store/apps/details?id=com.g1mishra.jaapmitra",
       landing: "https://jaapmitra.jeevanmishra.in",
@@ -129,12 +167,72 @@ export const apps: App[] = [
   },
   {
     name: "Saarthi",
+    slug: "saarthi",
+    tagline: "Your digital Gita jar, for when you feel lost.",
     description:
       "When you feel lost. Your digital Gita jar. Pull divine guidance from Krishna when you feel anxious, confused, or overwhelmed. Choose an emotion, receive curated Bhagavad Gita wisdom, and reflect.",
     tags: ["React Native", "Next.js", "Expo"],
+    featured: true,
+    status: "live",
+    packageName: "com.g1mishra.saarthi",
     links: {
       playStore: "https://play.google.com/store/apps/details?id=com.g1mishra.saarthi",
       landing: "https://trysaarthi.in/",
+    },
+  },
+  {
+    name: "Pachisi",
+    slug: "pachisi",
+    tagline: "The Indian cowrie-shell board game, played by its real rules.",
+    description:
+      "Pachisi is the game Ludo was flattened out of, and this is the original: six cowrie shells instead of a die, castles instead of a protected home lane, pieces that pair up and travel as one. Play offline against AI opponents, on a board that keeps the rules the West left behind.",
+    tags: ["React Native", "Expo", "TypeScript"],
+    featured: false,
+    status: "coming-soon",
+    packageName: "com.g1mishra.pachisi",
+    features: [
+      "Six cowrie shells, thrown the way the game was actually played — no dice, no Ludo shortcuts. All six down is a 25, one up is a 10, and both throw again.",
+      "The real ruleset: castles, grace throws, and doubled pieces that must move as a single unit.",
+      "Offline AI opponents at three difficulties. No account, no internet, no waiting for a lobby to fill.",
+      "Save a match mid-game and pick it up exactly where you left it.",
+      "Hand-drawn board, cloth and embroidery, built to be looked at.",
+    ],
+    links: {},
+    privacy: {
+      effective: "2026-07-25",
+      summary:
+        "Pachisi is an offline game. It has no accounts, no sign-in, and no servers of mine — I never receive any information about you. The only data that leaves your device is what Google's ad service collects to show ads.",
+      collectsPersonalData: false,
+      requiresAccount: false,
+      worksOffline: true,
+      onDeviceData: [
+        "Your saved game (board position, whose turn it is, and the move history needed to resume it)",
+        "Your settings, such as sound and haptics preferences",
+      ],
+      advertising: {
+        network: "Google AdMob",
+        policyUrl: "https://policies.google.com/technologies/ads",
+        note:
+          "Ads are served by Google AdMob. To show them, Google's SDK may collect your device's Advertising ID along with technical device and ad-interaction information. This happens inside Google's SDK — I never see or store it.",
+      },
+      permissions: [
+        {
+          name: "Internet access",
+          reason: "Used only to load ads. Every part of the game itself works with no connection.",
+        },
+        {
+          name: "Vibration",
+          reason: "Used for haptic feedback when you throw the cowries or move a piece.",
+        },
+      ],
+      childDirected: false,
+      thirdParties: [
+        {
+          name: "Google AdMob",
+          purpose: "Serving ads inside the app",
+          policyUrl: "https://policies.google.com/privacy",
+        },
+      ],
     },
   },
 ];

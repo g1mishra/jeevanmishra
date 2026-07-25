@@ -1,0 +1,91 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Nav from "../../components/Nav.astro";
+import Footer from "../../components/Footer.astro";
+import { apps } from "../../data/portfolio";
+
+// Hosted apps get an internal page; the rest link out to their own site.
+const entries = apps.map((app) => {
+  const outbound = app.links.landing ?? app.links.playStore;
+  const href = app.privacy ? `/apps/${app.slug}` : outbound;
+  return {
+    app,
+    href: href ?? `/apps/${app.slug}`,
+    external: Boolean(!app.privacy && outbound),
+    hostname: outbound ? new URL(outbound).hostname.replace("www.", "") : null,
+  };
+});
+---
+
+<Layout
+  title="Apps — Jeevan Kumar"
+  description="Every mobile app I've built and shipped, with their privacy policies and store links."
+>
+  <Nav />
+
+  <main class="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-20" transition:animate="slide">
+    <a
+      class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber transition-colors hover:text-amber-light"
+      href="/">← Back home</a
+    >
+
+    <h1 class="mt-10 font-display text-6xl font-semibold leading-none text-ink sm:text-7xl reveal">
+      Apps
+    </h1>
+    <p class="mt-6 text-xl leading-8 text-muted reveal" style="animation-delay: 0.1s">
+      Everything I've shipped to a store, in one place — the polished ones, the small ones, and
+      the experiments. Store links and privacy policies live here too.
+    </p>
+
+    <div class="mt-16 flex flex-col gap-4">
+      {
+        entries.map(({ app, href, external, hostname }, i) => (
+          <a
+            class="group reveal rounded-3xl border border-border bg-card p-7 transition-all duration-500 hover:border-amber/30 hover:bg-card-hover sm:p-8"
+            style={`animation-delay: ${0.15 + i * 0.05}s`}
+            href={href}
+            target={external ? "_blank" : undefined}
+            rel={external ? "noopener noreferrer" : undefined}
+          >
+            <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+              <h2 class="font-display text-3xl font-semibold text-ink transition-colors group-hover:text-amber">
+                {app.name}
+              </h2>
+              {app.status === "coming-soon" && (
+                <span class="rounded-full border border-amber/30 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-amber">
+                  Coming soon
+                </span>
+              )}
+              {external && hostname && (
+                <span class="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">
+                  {hostname} ↗
+                </span>
+              )}
+            </div>
+
+            <p class="mt-3 text-lg leading-8 text-muted">{app.tagline}</p>
+
+            <div class="mt-5 flex flex-wrap gap-2">
+              {app.tags.map((tag) => (
+                <span class="rounded-full border border-border px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-muted">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+
+    <p class="mt-16 border-t border-border pt-8 text-sm text-muted">
+      Every app I publish keeps a privacy policy at a permanent address. If you reached this page
+      from a store listing and can't find what you're looking for, email me at{" "}
+      <a
+        class="text-amber transition-colors hover:text-ink"
+        href="mailto:g1mishra.dev@gmail.com">g1mishra.dev@gmail.com</a
+      >.
+    </p>
+  </main>
+
+  <Footer />
+</Layout>
