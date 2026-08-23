@@ -48,6 +48,8 @@ export interface AppPrivacy {
   /** What the app writes to the device, staying on the device. */
   onDeviceData: string[];
   advertising: { network: string; policyUrl: string; note: string } | null;
+  /** Crash / diagnostic reports that LEAVE the device. Null means none are sent. */
+  diagnostics: { service: string; policyUrl: string; note: string; retention: string } | null;
   permissions: { name: string; reason: string }[];
   childDirected: boolean;
   thirdParties: ThirdParty[];
@@ -199,9 +201,9 @@ export const apps: App[] = [
     ],
     links: {},
     privacy: {
-      effective: "2026-07-25",
+      effective: "2026-08-21",
       summary:
-        "Pachisi is an offline game. It has no accounts, no sign-in, and no servers of mine — I never receive any information about you. The only data that leaves your device is what Google's ad service collects to show ads.",
+        "Pachisi is an offline game. It has no accounts, no sign-in, and no servers of mine — I never receive any information about you. The only data that leaves your device is what Google's ad service collects to show ads, and a crash report if the app stops working.",
       collectsPersonalData: false,
       requiresAccount: false,
       worksOffline: true,
@@ -215,10 +217,19 @@ export const apps: App[] = [
         note:
           "Ads are served by Google AdMob. To show them, Google's SDK may collect your device's Advertising ID along with technical device and ad-interaction information. This happens inside Google's SDK — I never see or store it.",
       },
+      diagnostics: {
+        service: "Google Firebase Crashlytics",
+        policyUrl: "https://firebase.google.com/support/privacy",
+        note:
+          "If the app crashes, a diagnostic report is sent to Google Firebase Crashlytics so I can find the fault and fix it. The report describes the failure — the error, the stack trace, your device model and operating system version, and which build of the app you were running — along with a random installation identifier Google generates for the app on your device. It carries no name, no email address, no contact detail, and nothing about how you play.",
+        retention:
+          "Crash reports sent to Google Firebase Crashlytics are governed by Google's retention policies; Crashlytics deletes individual reports after 90 days.",
+      },
       permissions: [
         {
           name: "Internet access",
-          reason: "Used only to load ads. Every part of the game itself works with no connection.",
+          reason:
+            "Used to load ads and to send a crash report if the app stops working. Every part of the game itself works with no connection.",
         },
         {
           name: "Vibration",
@@ -231,6 +242,11 @@ export const apps: App[] = [
           name: "Google AdMob",
           purpose: "Serving ads inside the app",
           policyUrl: "https://policies.google.com/privacy",
+        },
+        {
+          name: "Google Firebase Crashlytics",
+          purpose: "Reporting crashes so they can be fixed",
+          policyUrl: "https://firebase.google.com/support/privacy",
         },
       ],
     },

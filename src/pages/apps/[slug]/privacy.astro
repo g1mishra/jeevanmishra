@@ -76,7 +76,9 @@ const n = () => String(++section).padStart(2, "0");
           {
             privacy.collectsPersonalData
               ? "The app collects the personal information described below."
-              : "I do not collect, store, or transmit any personal information about you. The app has no analytics, no crash reporting that identifies you, no tracking of your behaviour, and no servers of mine that it talks to."
+              : privacy.diagnostics
+                ? "I do not collect, store, or transmit any personal information about you. The app has no analytics, no tracking of your behaviour, and no servers of mine that it talks to. It does send a crash report when it stops working, described below — that report carries nothing personal."
+                : "I do not collect, store, or transmit any personal information about you. The app has no analytics, no crash reporting, no tracking of your behaviour, and no servers of mine that it talks to."
           }
         </p>
         {
@@ -90,8 +92,10 @@ const n = () => String(++section).padStart(2, "0");
         {
           privacy.worksOffline && (
             <p class="mt-4">
-              The app runs entirely on your device. Nothing you do inside it is sent anywhere
-              for me to see.
+              The app runs entirely on your device.{" "}
+              {privacy.diagnostics
+                ? "Apart from a crash report when something goes wrong, nothing you do inside it is sent anywhere for me to see."
+                : "Nothing you do inside it is sent anywhere for me to see."}
             </p>
           )
         }
@@ -141,6 +145,30 @@ const n = () => String(++section).padStart(2, "0");
                 rel="noopener noreferrer"
               >
                 {privacy.advertising.policyUrl}
+              </a>
+              .
+            </p>
+          </section>
+        )
+      }
+
+      {
+        privacy.diagnostics && (
+          <section>
+            <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+              <span class="text-amber">{n()}.</span> Crash reporting
+            </h2>
+            <p class="mt-4">{privacy.diagnostics.note}</p>
+            <p class="mt-4">
+              How {privacy.diagnostics.service} handles this information is governed by its own
+              policy, which you can read here:{" "}
+              <a
+                class="text-amber underline underline-offset-4 transition-colors hover:text-ink"
+                href={privacy.diagnostics.policyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {privacy.diagnostics.policyUrl}
               </a>
               .
             </p>
@@ -226,6 +254,7 @@ const n = () => String(++section).padStart(2, "0");
             </p>
           )
         }
+        {privacy.diagnostics && <p class="mt-4">{privacy.diagnostics.retention}</p>}
       </section>
 
       <section>
