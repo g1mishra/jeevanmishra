@@ -1,6 +1,13 @@
 ---
 import { meta, social } from "../data/portfolio";
 
+interface Props {
+  /** Absolute origin to prefix internal links with, for app subdomains. */
+  base?: string;
+}
+
+const { base = "" } = Astro.props;
+
 const socialLabels: Record<string, string> = {
   github: "GitHub",
   linkedin: "LinkedIn",
@@ -23,9 +30,9 @@ const socialLabels: Record<string, string> = {
         ))
       }
       <a class="transition-colors hover:text-ink" href={`mailto:${meta.email}`}>Email</a>
-      <a class="transition-colors hover:text-ink" href={meta.resumeUrl} target="_blank" rel="noopener noreferrer">Resume</a>
-      <a class="transition-colors hover:text-ink" href="/apps">Apps</a>
-      <a class="transition-colors hover:text-ink" href="/uses">Uses</a>
+      <a class="transition-colors hover:text-ink" href={`${base}${meta.resumeUrl}`} target="_blank" rel="noopener noreferrer">Resume</a>
+      <a class="transition-colors hover:text-ink" href={`${base}/apps`}>Apps</a>
+      <a class="transition-colors hover:text-ink" href={`${base}/uses`}>Uses</a>
     </div>
     
     <button id="back-to-top" class="group flex items-center gap-2 text-muted transition-colors hover:text-amber" aria-label="Scroll back to top">

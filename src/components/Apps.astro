@@ -1,5 +1,5 @@
 ---
-import { apps } from "../data/portfolio";
+import { apps, appUrl } from "../data/portfolio";
 import { Image } from "astro:assets";
 import jaapmitraFeature from "../assets/jaapmitra-feature.png";
 import saarthiFeature from "../assets/saarthi-feature.png";
@@ -47,6 +47,14 @@ const featuredApps = apps.filter((app) => app.featured);
             </div>
             
             <div class="mt-8 flex flex-wrap gap-5 text-sm font-semibold">
+              {app.hosted && (
+                <a
+                  class="inline-flex items-center justify-center rounded-full bg-ink px-6 py-2.5 !text-paper transition hover:bg-ink/80 hover:scale-105"
+                  href={appUrl(app)}
+                >
+                  Visit site →
+                </a>
+              )}
               {Object.entries(app.links).map(([key, href]) => (
                 <a
                   class="inline-flex items-center justify-center rounded-full bg-ink px-6 py-2.5 !text-paper transition hover:bg-ink/80 hover:scale-105"

@@ -2,16 +2,16 @@
 import Layout from "../../layouts/Layout.astro";
 import Nav from "../../components/Nav.astro";
 import Footer from "../../components/Footer.astro";
-import { apps } from "../../data/portfolio";
+import { apps, appUrl } from "../../data/portfolio";
 
-// Hosted apps get an internal page; the rest link out to their own site.
+// Hosted apps live on a subdomain of this site; the rest are somebody else's
+// domain and get an outbound marker.
 const entries = apps.map((app) => {
   const outbound = app.links.landing ?? app.links.playStore;
-  const href = app.privacy ? `/apps/${app.slug}` : outbound;
   return {
     app,
-    href: href ?? `/apps/${app.slug}`,
-    external: Boolean(!app.privacy && outbound),
+    href: appUrl(app),
+    external: !app.hosted && Boolean(outbound),
     hostname: outbound ? new URL(outbound).hostname.replace("www.", "") : null,
   };
 });

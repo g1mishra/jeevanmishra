@@ -1,0 +1,62 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_URL } from "../data/portfolio";
+
+// One page answers for every host. An unknown path on an app subdomain rewrites
+// to /apps/<slug>/… , finds nothing, and lands here — so every link out has to be
+// absolute to lead back to the portfolio rather than deeper into the subdomain.
+const exits = [
+	{ href: `${SITE_URL}/`, title: "Home", blurb: "The work, the apps, and what I'm building now." },
+	{ href: `${SITE_URL}/apps`, title: "Apps", blurb: "Everything I've shipped to a store, with privacy policies." },
+	{ href: `${SITE_URL}/uses`, title: "Uses", blurb: "The daily stack, tools, and gear I keep close." },
+];
+---
+
+<Layout
+	title="Page not found - Jeevan Kumar"
+	description="That page doesn't exist. Head back to jeevanmishra.in for the work, the apps, and everything else."
+	noindex
+>
+	<Nav base={SITE_URL} />
+
+	<main class="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-20" transition:animate="slide">
+		<p class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber">
+			Error 404
+		</p>
+
+		<h1 class="mt-10 font-display text-6xl font-semibold leading-none text-ink sm:text-7xl reveal">
+			Nothing here.
+		</h1>
+		<p class="mt-6 text-xl leading-8 text-muted reveal" style="animation-delay: 0.1s">
+			This page either moved or never existed. No harm done — here's the way back.
+		</p>
+
+		<div class="mt-16 flex flex-col gap-4">
+			{
+				exits.map((exit, i) => (
+					<a
+						class="group reveal rounded-3xl border border-border bg-card p-7 transition-all duration-500 hover:border-amber/30 hover:bg-card-hover sm:p-8"
+						style={`animation-delay: ${0.15 + i * 0.05}s`}
+						href={exit.href}
+					>
+						<h2 class="font-display text-3xl font-semibold text-ink transition-colors group-hover:text-amber">
+							{exit.title}
+						</h2>
+						<p class="mt-3 text-lg leading-8 text-muted">{exit.blurb}</p>
+					</a>
+				))
+			}
+		</div>
+
+		<p class="mt-16 border-t border-border pt-8 text-sm text-muted">
+			Landed here from a store listing or an old link? Email me at{" "}
+			<a class="text-amber transition-colors hover:text-ink" href="mailto:g1mishra.dev@gmail.com"
+				>g1mishra.dev@gmail.com</a
+			> and I'll point you at the right page.
+		</p>
+	</main>
+
+	<Footer base={SITE_URL} />
+</Layout>

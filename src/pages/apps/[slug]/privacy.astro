@@ -2,11 +2,11 @@
 import Layout from "../../../layouts/Layout.astro";
 import Nav from "../../../components/Nav.astro";
 import Footer from "../../../components/Footer.astro";
-import { apps, meta } from "../../../data/portfolio";
+import { apps, meta, appBase, appOrigin, SITE_URL } from "../../../data/portfolio";
 
 export function getStaticPaths() {
   return apps
-    .filter((app) => app.privacy)
+    .filter((app) => app.hosted && app.privacy)
     .map((app) => ({
       params: { slug: app.slug },
       props: { app, privacy: app.privacy! },
@@ -28,13 +28,14 @@ const n = () => String(++section).padStart(2, "0");
 <Layout
   title={`Privacy Policy — ${app.name}`}
   description={`Privacy policy for the ${app.name} mobile app by ${meta.name}. ${privacy.summary}`}
+  canonical={`${appOrigin(app)}/privacy`}
 >
-  <Nav />
+  <Nav base={SITE_URL} />
 
   <main class="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-20" transition:animate="slide">
     <a
       class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber transition-colors hover:text-amber-light"
-      href={`/apps/${app.slug}`}>← {app.name}</a
+      href={`${appBase(app)}/`}>← {app.name}</a
     >
 
     <h1 class="mt-10 font-display text-5xl font-semibold leading-tight text-ink sm:text-6xl">
@@ -283,5 +284,5 @@ const n = () => String(++section).padStart(2, "0");
     </div>
   </main>
 
-  <Footer />
+  <Footer base={SITE_URL} />
 </Layout>

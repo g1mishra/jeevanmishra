@@ -7,15 +7,21 @@ interface Props {
 	title?: string;
 	description?: string;
 	ogImage?: string;
+	/** Overrides the derived canonical. App pages pass their subdomain URL. */
+	canonical?: string;
+	/** Keeps the page out of search results — set on 404 and other non-content pages. */
+	noindex?: boolean;
 }
 
 const {
 	title = "Jeevan Kumar - Software Engineer, Indie Developer, Creator",
 	description = "Personal portfolio of Jeevan Kumar, a Software Engineer and Indie Developer from India. I build modern, scalable web and mobile products.",
-	ogImage = "/og-image.png"
+	ogImage = "/og-image.png",
+	canonical,
+	noindex = false,
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
 
 const personSchema = {
 	"@context": "https://schema.org",
@@ -52,6 +58,7 @@ const personSchema = {
 		<title>{title}</title>
 
 		<link rel="canonical" href={canonicalURL} />
+		{noindex && <meta name="robots" content="noindex, follow" />}
 
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content={canonicalURL} />

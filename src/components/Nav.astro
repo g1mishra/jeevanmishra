@@ -1,20 +1,30 @@
 ---
 import { meta } from "../data/portfolio";
 import ThemeToggle from "./ThemeToggle.astro";
+
+interface Props {
+  /**
+   * Absolute origin to prefix nav links with. App subdomains pass the
+   * portfolio's origin so the nav still points back to the main site.
+   */
+  base?: string;
+}
+
+const { base = "" } = Astro.props;
 ---
 
 <header class="sticky top-0 z-40 mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 sm:px-8 transition-all duration-300" id="main-nav">
   <div class="absolute inset-0 -z-10 backdrop-blur-md bg-paper/90 border-b border-transparent transition-colors duration-300" id="nav-bg"></div>
   
-  <a href="/" class="font-display text-2xl font-semibold tracking-normal transition-transform hover:scale-105 text-ink relative z-20">jeevan</a>
+  <a href={`${base}/`} class="font-display text-2xl font-semibold tracking-normal transition-transform hover:scale-105 text-ink relative z-20">jeevan</a>
   
   <div class="flex items-center gap-3 sm:gap-6 relative z-20">
     <nav aria-label="Main navigation" class="hidden sm:flex flex-wrap items-center justify-end gap-x-6 text-sm font-medium text-muted nav-links">
-      <a class="transition-colors hover:text-ink" href="/#work">Work</a>
-      <a class="transition-colors hover:text-ink" href="/#apps">Apps</a>
-      <a class="transition-colors hover:text-ink" href="/#projects">Projects</a>
-      <a class="transition-colors hover:text-ink" href="/#about">About</a>
-      <a class="transition-colors hover:text-ink" href="/uses">Uses</a>
+      <a class="transition-colors hover:text-ink" href={`${base}/#work`}>Work</a>
+      <a class="transition-colors hover:text-ink" href={`${base}/#apps`}>Apps</a>
+      <a class="transition-colors hover:text-ink" href={`${base}/#projects`}>Projects</a>
+      <a class="transition-colors hover:text-ink" href={`${base}/#about`}>About</a>
+      <a class="transition-colors hover:text-ink" href={`${base}/uses`}>Uses</a>
     </nav>
     
     <ThemeToggle />
@@ -42,11 +52,11 @@ import ThemeToggle from "./ThemeToggle.astro";
   <!-- Mobile Dropdown Menu -->
   <div id="mobile-menu" class="absolute top-full left-0 right-0 bg-paper/95 backdrop-blur-xl border-b border-border shadow-lg transition-all duration-300 opacity-0 invisible translate-y-[-10px] sm:hidden z-10">
     <nav aria-label="Mobile navigation" class="flex flex-col items-center py-8 gap-y-6 text-base font-medium text-muted nav-links-mobile">
-      <a class="transition-colors hover:text-amber" href="/#work">Work</a>
-      <a class="transition-colors hover:text-amber" href="/#apps">Apps</a>
-      <a class="transition-colors hover:text-amber" href="/#projects">Projects</a>
-      <a class="transition-colors hover:text-amber" href="/#about">About</a>
-      <a class="transition-colors hover:text-amber" href="/uses">Uses</a>
+      <a class="transition-colors hover:text-amber" href={`${base}/#work`}>Work</a>
+      <a class="transition-colors hover:text-amber" href={`${base}/#apps`}>Apps</a>
+      <a class="transition-colors hover:text-amber" href={`${base}/#projects`}>Projects</a>
+      <a class="transition-colors hover:text-amber" href={`${base}/#about`}>About</a>
+      <a class="transition-colors hover:text-amber" href={`${base}/uses`}>Uses</a>
     </nav>
   </div>
 </header>

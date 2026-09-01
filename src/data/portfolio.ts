@@ -64,6 +64,12 @@ export interface App {
   /** Shown in the Apps section of the homepage. Unfeatured apps still get pages. */
   featured: boolean;
   status: "live" | "coming-soon";
+  /**
+   * True when this app's pages are built by this repo. A hosted app is served
+   * at <slug>.jeevanmishra.in (see vercel.json) and that subdomain is its
+   * canonical address. False means the app keeps its own site elsewhere.
+   */
+  hosted: boolean;
   packageName?: string;
   features?: string[];
   links: Record<string, string>;
@@ -161,6 +167,7 @@ export const apps: App[] = [
     tags: ["React Native", "Expo", "SQLite"],
     featured: true,
     status: "live",
+    hosted: false,
     packageName: "com.g1mishra.jaapmitra",
     links: {
       playStore: "https://play.google.com/store/apps/details?id=com.g1mishra.jaapmitra",
@@ -176,6 +183,7 @@ export const apps: App[] = [
     tags: ["React Native", "Next.js", "Expo"],
     featured: true,
     status: "live",
+    hosted: false,
     packageName: "com.g1mishra.saarthi",
     links: {
       playStore: "https://play.google.com/store/apps/details?id=com.g1mishra.saarthi",
@@ -191,6 +199,7 @@ export const apps: App[] = [
     tags: ["React Native", "Expo", "TypeScript"],
     featured: false,
     status: "coming-soon",
+    hosted: true,
     packageName: "com.g1mishra.pachisi",
     features: [
       "Six cowrie shells, thrown the way the game was actually played — no dice, no Ludo shortcuts. All six down is a 25, one up is a 10, and both throw again.",
@@ -281,3 +290,30 @@ export const projects: Project[] = [
     links: {},
   },
 ];
+
+/** Canonical origin of the portfolio itself. */
+export const SITE_URL = "https://jeevanmishra.in";
+
+/**
+ * Canonical origin of a hosted app: pachisi -> https://pachisi.jeevanmishra.in
+ * vercel.json rewrites that host onto /apps/<slug>, so a new app needs nothing
+ * beyond an entry here and its subdomain pointed at this project.
+ */
+export function appOrigin(app: App): string {
+  return `https://${app.slug}.jeevanmishra.in`;
+}
+
+/** Where an app actually lives on the web — its subdomain, or its own site. */
+export function appUrl(app: App): string {
+  if (app.hosted) return `${appOrigin(app)}/`;
+  return app.links.landing ?? app.links.playStore ?? `${SITE_URL}/apps`;
+}
+
+/**
+ * Prefix for links between one app's own pages. Empty in production, because
+ * the subdomain serves them at its root; /apps/<slug> in dev, where there is
+ * no subdomain to be served from.
+ */
+export function appBase(app: App): string {
+  return import.meta.env.DEV ? `/apps/${app.slug}` : "";
+}

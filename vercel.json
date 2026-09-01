@@ -1,0 +1,41 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/apps/jaapmitra",
+      "has": [{ "type": "host", "value": "jeevanmishra[.]in" }],
+      "destination": "https://jaapmitra.jeevanmishra.in/",
+      "permanent": true
+    },
+    {
+      "source": "/apps/saarthi",
+      "has": [{ "type": "host", "value": "jeevanmishra[.]in" }],
+      "destination": "https://trysaarthi.in/",
+      "permanent": true
+    },
+    {
+      "source": "/apps/:slug",
+      "has": [{ "type": "host", "value": "jeevanmishra[.]in" }],
+      "destination": "https://:slug.jeevanmishra.in/",
+      "permanent": true
+    },
+    {
+      "source": "/apps/:slug/:path+",
+      "has": [{ "type": "host", "value": "jeevanmishra[.]in" }],
+      "destination": "https://:slug.jeevanmishra.in/:path+",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "(?<slug>(?!www)[a-z0-9-]+)[.]jeevanmishra[.]in" }],
+      "destination": "/apps/:slug"
+    },
+    {
+      "source": "/:path((?!_astro/|.*[.]).+)",
+      "has": [{ "type": "host", "value": "(?<slug>(?!www)[a-z0-9-]+)[.]jeevanmishra[.]in" }],
+      "destination": "/apps/:slug/:path"
+    }
+  ]
+}
