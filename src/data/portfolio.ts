@@ -55,6 +55,27 @@ export interface AppPrivacy {
   thirdParties: ThirdParty[];
 }
 
+/** A two-column table inside an app section, e.g. the Pachisi throw values. */
+export interface AppTable {
+  columns: [string, string];
+  rows: [string, string][];
+}
+
+/** A free-form content block on an app page, rendered in order. */
+export interface AppSection {
+  heading: string;
+  lead?: string;
+  table?: AppTable;
+  bullets?: string[];
+  note?: string;
+}
+
+/** Rendered as a list and emitted as FAQPage JSON-LD. */
+export interface AppFaq {
+  question: string;
+  answer: string;
+}
+
 export interface App {
   name: string;
   slug: string;
@@ -71,8 +92,14 @@ export interface App {
    */
   hosted: boolean;
   packageName?: string;
-  features?: string[];
   links: Record<string, string>;
+  /** Overrides the title and meta description derived from name and tagline. */
+  seo?: { title: string; description: string };
+  /** Opening paragraph on the app page. Falls back to description. */
+  lead?: string;
+  /** Content blocks below the feature list. */
+  sections?: AppSection[];
+  faq?: AppFaq[];
   privacy?: AppPrivacy;
 }
 
@@ -196,17 +223,76 @@ export const apps: App[] = [
     tagline: "The Indian cowrie-shell board game, played by its real rules.",
     description:
       "Pachisi is the game Ludo was flattened out of, and this is the original: six cowrie shells instead of a die, castles instead of a protected home lane, pieces that pair up and travel as one. Play offline against AI opponents, on a board that keeps the rules the West left behind.",
+    seo: {
+      title: "Pachisi — the Indian original, played by its real rules",
+      description:
+        "The game Ludo was flattened out of. Six cowrie shells, castles, doubled pieces, and an exact count home. Free, offline, in English and हिन्दी.",
+    },
+    lead:
+      "Pachisi is the game Ludo was flattened out of, and this is the original. Six cowrie shells instead of a die. Castles instead of a protected home lane. Pieces that pair up and travel as one. Play it offline against three levels of computer opponent, or pass the phone around for two or four players — on a board that keeps the rules the West left behind.",
     tags: ["React Native", "Expo", "TypeScript"],
     featured: false,
     status: "coming-soon",
     hosted: true,
     packageName: "com.g1mishra.pachisi",
-    features: [
-      "Six cowrie shells, thrown the way the game was actually played — no dice, no Ludo shortcuts. All six down is a 25, one up is a 10, and both throw again.",
-      "The real ruleset: castles, grace throws, and doubled pieces that must move as a single unit.",
-      "Offline AI opponents at three difficulties. No account, no internet, no waiting for a lobby to fill.",
-      "Save a match mid-game and pick it up exactly where you left it.",
-      "Hand-drawn board, cloth and embroidery, built to be looked at.",
+    sections: [
+      {
+        heading: "How a throw works",
+        table: {
+          columns: ["Shells landing mouth-up", "You move"],
+          rows: [
+            ["2, 3, 4, 5 or 6", "that many"],
+            ["1", "10 — throw again"],
+            ["0", "25 — the pachis the game is named for — throw again"],
+          ],
+        },
+        note: "A 6, 10 or 25 is a grace: another throw, and a new pawn may enter. Throws stack up and are spent one at a time, each moving one pawn. Three identical graces in a row and the whole turn is wiped.",
+      },
+      {
+        heading: "What's inside",
+        bullets: [
+          "Six cowrie shells, thrown the way the game was actually played — no dice, no Ludo shortcuts.",
+          "The real ruleset: castles, grace throws, and doubled pieces that must move as a single unit.",
+          "Offline computer opponents at three difficulties. No account, no internet, no lobby to wait for.",
+          "Two players or four on one phone, in classic teams — everyone's name and numbers turn to face their own side of the board.",
+          "A five-lesson course played on the real board, not a wall of text — shells, castles, capture, the road home, doubled pieces.",
+          "English and हिन्दी.",
+          "Save mid-match and pick it up exactly where you left it.",
+          "Every colour also has its own shape, so the board reads without relying on colour.",
+        ],
+      },
+      {
+        heading: "Isn't this just Ludo?",
+        lead: "Ludo is a Victorian simplification of Pachisi, patented in England in 1896 with most of the game taken out. Here's what came back:",
+        bullets: [
+          "Shells, not a die. Six cowries give 2–6, 10 and 25 — a spread no die can make.",
+          "No protected home lane. Ludo gives you a corridor nothing can touch; Pachisi gives you castles instead.",
+          "Castles. Marked squares where a pawn simply cannot be taken.",
+          "Doubled pieces. Two of your pawns on one square lock together and move as one — and only a pair or better can take them.",
+          "An exact count home. You cannot overshoot; the last square before home is a trap that no throw can leave.",
+          "Counter-clockwise, the way it has always been played.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: "Is it free?",
+        answer: "Yes, supported by ads. No purchases, no subscriptions.",
+      },
+      {
+        question: "Does it need internet?",
+        answer: "No. Every mode works fully offline; ads simply don't load.",
+      },
+      {
+        question: "Can I play with friends?",
+        answer:
+          "Two or four players on one device, passing the phone around. There is no online multiplayer in this version.",
+      },
+      {
+        question: "I don't know the rules.",
+        answer:
+          "The app teaches them in about three minutes, on a real board, one move at a time.",
+      },
     ],
     links: {},
     privacy: {

@@ -11,6 +11,8 @@ interface Props {
 	canonical?: string;
 	/** Keeps the page out of search results — set on 404 and other non-content pages. */
 	noindex?: boolean;
+	/** Extra JSON-LD graphs to emit alongside the Person schema. */
+	schemas?: unknown[];
 }
 
 const {
@@ -19,6 +21,7 @@ const {
 	ogImage = "/og-image.png",
 	canonical,
 	noindex = false,
+	schemas = [],
 } = Astro.props;
 
 const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
@@ -101,6 +104,9 @@ const personSchema = {
 		</script>
 		
 		<script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+		{schemas.map((schema) => (
+			<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+		))}
 	</head>
 	<body class="min-h-screen">
 		<slot />
