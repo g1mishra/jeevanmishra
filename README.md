@@ -71,6 +71,14 @@ no change when a new app ships.
 | `pachisi.jeevanmishra.in/privacy` | rewrite → `/apps/pachisi/privacy` |
 | `jeevanmishra.in/apps/pachisi` | 301 → `https://pachisi.jeevanmishra.in/` |
 | `pachisi.jeevanmishra.in/_astro/…`, `/favicon.ico` | passed through to the shared root |
+| `pachisi.jeevanmishra.in/uses` | portfolio's page, which canonicals to the apex (see below) |
+
+The rules live in `routes`, not `rewrites`, because rewrites are applied only
+after the filesystem is checked — `/privacy` would rewrite but `/` would serve
+the portfolio homepage. Routes run first. Note that when a rewritten path has
+no file behind it, Vercel falls back to the original path, so apex pages like
+`/uses` still answer on a subdomain; they carry the apex canonical and are
+absent from the sitemap, so search engines consolidate them.
 
 The subdomain is each app's canonical URL: `Layout.astro` takes a `canonical`
 prop, the sitemap rewrites those entries to the subdomain, and the apex path
