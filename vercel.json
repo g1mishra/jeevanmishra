@@ -1,41 +1,40 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "redirects": [
+  "routes": [
     {
-      "source": "/apps/jaapmitra",
+      "src": "/apps/jaapmitra/?",
       "has": [{ "type": "host", "value": "jeevanmishra[.]in" }],
-      "destination": "https://jaapmitra.jeevanmishra.in/",
-      "permanent": true
+      "status": 308,
+      "headers": { "Location": "https://jaapmitra.jeevanmishra.in/" }
     },
     {
-      "source": "/apps/saarthi",
+      "src": "/apps/saarthi/?",
       "has": [{ "type": "host", "value": "jeevanmishra[.]in" }],
-      "destination": "https://trysaarthi.in/",
-      "permanent": true
+      "status": 308,
+      "headers": { "Location": "https://trysaarthi.in/" }
     },
     {
-      "source": "/apps/:slug",
+      "src": "/apps/(?<slug>[^/]+)/?",
       "has": [{ "type": "host", "value": "jeevanmishra[.]in" }],
-      "destination": "https://:slug.jeevanmishra.in/",
-      "permanent": true
+      "status": 308,
+      "headers": { "Location": "https://$slug.jeevanmishra.in/" }
     },
     {
-      "source": "/apps/:slug/:path+",
+      "src": "/apps/(?<slug>[^/]+)/(?<rest>.+)",
       "has": [{ "type": "host", "value": "jeevanmishra[.]in" }],
-      "destination": "https://:slug.jeevanmishra.in/:path+",
-      "permanent": true
-    }
-  ],
-  "rewrites": [
+      "status": 308,
+      "headers": { "Location": "https://$slug.jeevanmishra.in/$rest" }
+    },
     {
-      "source": "/",
+      "src": "/",
       "has": [{ "type": "host", "value": "(?<slug>(?!www)[a-z0-9-]+)[.]jeevanmishra[.]in" }],
-      "destination": "/apps/:slug"
+      "dest": "/apps/$slug"
     },
     {
-      "source": "/:path((?!_astro/|.*[.]).+)",
+      "src": "/(?<path>(?!_astro/)[^.]+)",
       "has": [{ "type": "host", "value": "(?<slug>(?!www)[a-z0-9-]+)[.]jeevanmishra[.]in" }],
-      "destination": "/apps/:slug/:path"
-    }
+      "dest": "/apps/$slug/$path"
+    },
+    { "handle": "filesystem" }
   ]
 }
