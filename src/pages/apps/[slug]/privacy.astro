@@ -1,8 +1,6 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import Nav from "../../../components/Nav.astro";
-import Footer from "../../../components/Footer.astro";
-import { apps, meta, appBase, appOrigin, SITE_URL } from "../../../data/portfolio";
+import AppLayout from "../../../layouts/AppLayout.astro";
+import { apps, meta, appBase, appOrigin } from "../../../data/portfolio";
 
 export function getStaticPaths() {
   return apps
@@ -25,32 +23,32 @@ let section = 0;
 const n = () => String(++section).padStart(2, "0");
 ---
 
-<Layout
+<AppLayout
+  app={app}
   title={`Privacy Policy — ${app.name}`}
   description={`Privacy policy for the ${app.name} mobile app by ${meta.name}. ${privacy.summary}`}
+  ogImage={app.ogImage}
   canonical={`${appOrigin(app)}/privacy`}
 >
-  <Nav base={SITE_URL} />
-
-  <main class="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-20" transition:animate="slide">
+  <main class="mx-auto w-full max-w-5xl px-5 pt-10 pb-4 sm:px-8 sm:pt-16">
     <a
-      class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber transition-colors hover:text-amber-light"
+      class="text-xs font-bold uppercase tracking-[0.12em] text-amber transition-colors hover:text-ink"
       href={`${appBase(app)}/`}>← {app.name}</a
     >
 
-    <h1 class="mt-10 font-display text-5xl font-semibold leading-tight text-ink sm:text-6xl">
+    <h1 class="mt-10 font-display text-5xl font-bold leading-tight text-ink sm:text-6xl">
       Privacy Policy
     </h1>
     <p class="mt-4 text-xl text-muted">
       for <strong class="font-medium text-ink">{app.name}</strong>
       {app.packageName && <span class="font-mono text-sm">({app.packageName})</span>}
     </p>
-    <p class="mt-2 font-mono text-xs uppercase tracking-[0.12em] text-muted">
+    <p class="mt-2 text-xs font-bold uppercase tracking-[0.12em] text-muted">
       Effective {effectiveDate}
     </p>
 
-    <div class="mt-10 rounded-2xl border border-amber/20 bg-amber-light p-6 text-lg leading-8 text-ink">
-      <p class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber">
+    <div class="mt-10 rounded-2xl border border-amber/25 bg-amber-light p-6 text-lg leading-8 text-ink">
+      <p class="text-xs font-bold uppercase tracking-[0.12em] text-amber">
         In short
       </p>
       <p class="mt-3">{privacy.summary}</p>
@@ -283,6 +281,4 @@ const n = () => String(++section).padStart(2, "0");
       </section>
     </div>
   </main>
-
-  <Footer base={SITE_URL} />
-</Layout>
+</AppLayout>

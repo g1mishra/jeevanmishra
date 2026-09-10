@@ -43,7 +43,8 @@ me-v2/
 │   ├── data/
 │   │   └── portfolio.ts    # Centralized source of truth for all content & experiences
 │   ├── layouts/
-│   │   └── Layout.astro    # Base HTML template & page styling wrappers
+│   │   ├── Layout.astro    # Base HTML template for the portfolio
+│   │   └── AppLayout.astro # Standalone shell for a hosted app's own site
 │   ├── pages/
 │   │   ├── index.astro     # Main landing page
 │   │   ├── apps/           # App pages, served at <slug>.jeevanmishra.in
@@ -80,16 +81,42 @@ no file behind it, Vercel falls back to the original path, so apex pages like
 `/uses` still answer on a subdomain; they carry the apex canonical and are
 absent from the sitemap, so search engines consolidate them.
 
-The subdomain is each app's canonical URL: `Layout.astro` takes a `canonical`
-prop, the sitemap rewrites those entries to the subdomain, and the apex path
-301s away so only one address is indexable. `Nav` and `Footer` take a `base`
-prop, which app pages set to `SITE_URL` so navigation still points back at the
-portfolio from a subdomain; links *within* an app use `appBase(app)`, which is
-empty in production and `/apps/<slug>` in dev.
+The subdomain is each app's canonical URL: the sitemap rewrites those entries
+to the subdomain and the apex path 301s away, so only one address is
+indexable. Links *within* an app use `appBase(app)`, which is empty in
+production and `/apps/<slug>` in dev.
+
+### An app is its own site, not a portfolio page
+
+Hosted app pages do **not** use `Layout`, `Nav` or `Footer`. They render in
+`AppLayout.astro`, a standalone shell with its own header, footer, favicon
+(the app icon), fonts and `MobileApplication` schema — no portfolio nav, no
+theme toggle, and the Person schema left behind. The only thread back is the
+byline in its footer.
+
+It restyles the page by overriding the `--theme-*` variables that `global.css`
+maps every Tailwind colour utility onto, so an app gets its own palette and
+type without a single class name changing — including on the generated privacy
+policy. Pachisi's block sits at the bottom of `AppLayout.astro`, sampled from
+its own store artwork: the near-black of the cloth the board is shot on, the
+brass gold of the wordmark, and the Playfair Display those images are set in.
+The page is built to sit inside those photographs, so replacing the artwork
+means resampling that block.
+
+Because an app reads as a separate property, `/apps` links to it with
+`target="_blank"` and an outbound hostname marker, exactly like the apps that
+keep a domain elsewhere.
 
 ### Shipping a new app
 
 1. Add the entry to `apps` in `src/data/portfolio.ts` with `hosted: true`.
+   Drop the artwork into `src/assets/apps/` and name it in `icon`,
+   `heroImage` and `screenshots` — the page hero, the gallery and the store
+   buttons all come from that entry. Reuse the store listing's own screenshots
+   and feature graphic rather than raw UI captures; they are already art
+   directed, and the page palette is sampled to match them. A
+   `links.playStore` URL is what turns the page into a real landing page, so
+   add it the day the listing goes live and flip `status` to `"live"`.
 2. Add a CNAME at the DNS provider: `<slug>` → the target Vercel shows for
    the domain (normally `cname.vercel-dns.com`). DNS for jeevanmishra.in is
    managed at the registrar, not on Vercel nameservers.

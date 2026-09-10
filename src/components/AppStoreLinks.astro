@@ -1,0 +1,41 @@
+---
+// Store buttons for an app page. The first link is the primary action, so it
+// gets the solid treatment and the rest fall back to outlines.
+interface Props {
+  links: Record<string, string>;
+  class?: string;
+}
+
+const { links, class: className = "" } = Astro.props;
+
+const labels: Record<string, string> = {
+  playStore: "Get it on Google Play →",
+  appStore: "Download on the App Store →",
+  live: "Open the app →",
+  landing: "Visit the site →",
+};
+
+const entries = Object.entries(links);
+---
+
+{
+  entries.length > 0 && (
+    <div class:list={["flex flex-wrap gap-4 text-sm font-semibold", className]}>
+      {entries.map(([key, href], i) => (
+        <a
+          class:list={[
+            "inline-flex items-center justify-center rounded-full px-7 py-3 font-bold transition hover:scale-105",
+            i === 0
+              ? "bg-amber !text-paper hover:brightness-110"
+              : "border border-border text-ink hover:border-amber/50 hover:text-amber",
+          ]}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {labels[key] ?? key}
+        </a>
+      ))}
+    </div>
+  )
+}

@@ -4,14 +4,16 @@ import Nav from "../../components/Nav.astro";
 import Footer from "../../components/Footer.astro";
 import { apps, appUrl } from "../../data/portfolio";
 
-// Hosted apps live on a subdomain of this site; the rest are somebody else's
-// domain and get an outbound marker.
+// Every app that has an address of its own opens in a new tab and shows where
+// it goes. A hosted app counts: it is served from its own subdomain with its
+// own branding, so it leaves the portfolio just like the ones hosted elsewhere.
 const entries = apps.map((app) => {
-  const outbound = app.links.landing ?? app.links.playStore;
+  const href = appUrl(app);
+  const outbound = app.hosted ? href : (app.links.landing ?? app.links.playStore);
   return {
     app,
-    href: appUrl(app),
-    external: !app.hosted && Boolean(outbound),
+    href,
+    external: Boolean(outbound),
     hostname: outbound ? new URL(outbound).hostname.replace("www.", "") : null,
   };
 });

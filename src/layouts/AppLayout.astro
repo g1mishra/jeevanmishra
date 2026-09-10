@@ -1,0 +1,223 @@
+---
+import "../styles/global.css";
+import { Image } from "astro:assets";
+import { appAsset } from "../data/appAssets";
+import { meta, appBase, appOrigin, SITE_URL, type App } from "../data/portfolio";
+
+/**
+ * Shell for a hosted app's own site. Deliberately not Layout.astro: an app is
+ * served from its own subdomain, so it gets its own palette, its own type, its
+ * own favicon and its own chrome rather than the portfolio's. The only thread
+ * back to the portfolio is the byline in the footer.
+ *
+ * The palette is applied by overriding the --theme-* variables global.css maps
+ * every Tailwind colour utility onto, so the app pages restyle wholesale
+ * without touching a single class name.
+ */
+interface Props {
+  app: App;
+  title: string;
+  description: string;
+  canonical: string;
+  ogImage?: string;
+  schemas?: unknown[];
+}
+
+const { app, title, description, canonical, ogImage, schemas = [] } = Astro.props;
+
+const icon = appAsset(app.icon);
+const home = `${appBase(app)}/`;
+const store = app.links.playStore ?? app.links.appStore ?? app.links.live;
+const socialImage = new URL(ogImage ?? "/og-image.png", SITE_URL).toString();
+
+// This page is the app's own storefront now, so it describes the app rather
+// than its author. The portfolio keeps the Person schema.
+const appSchema = {
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  name: app.name,
+  description: app.description,
+  url: `${appOrigin(app)}/`,
+  operatingSystem: "Android",
+  image: socialImage,
+  ...(app.appCategory && { applicationCategory: app.appCategory }),
+  ...(store && { installUrl: store }),
+  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+  author: { "@type": "Person", name: meta.name, url: SITE_URL },
+};
+
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en" data-app={app.slug}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {
+      icon && (
+        <>
+          <link rel="icon" href={icon.src} />
+          <link rel="apple-touch-icon" href={icon.src} />
+        </>
+      )
+    }
+    <meta name="theme-color" content="#0c0b12" />
+    <meta name="author" content={meta.name} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={app.name} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImage} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonical} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(appSchema)} />
+    {
+      schemas.map((schema) => (
+        <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      ))
+    }
+  </head>
+
+  <body class="min-h-screen">
+    <header class="sticky top-0 z-40 border-b border-border bg-paper/90 backdrop-blur-md">
+      <div
+        class="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-5 py-3.5 sm:px-8"
+      >
+        <a class="flex items-center gap-3" href={home}>
+          {
+            icon && (
+              <Image
+                src={icon}
+                alt=""
+                width={80}
+                class="h-9 w-9 rounded-xl border border-border"
+                loading="eager"
+              />
+            )
+          }
+          <span class="font-display text-xl font-semibold text-ink">{app.name}</span>
+        </a>
+
+        {
+          store && (
+            <a
+              class="rounded-full bg-amber px-5 py-2 text-sm font-bold !text-paper transition hover:brightness-110"
+              href={store}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get it free
+            </a>
+          )
+        }
+      </div>
+    </header>
+
+    <slot />
+
+    <footer class="mt-24 border-t border-border">
+      <div class="mx-auto w-full max-w-5xl px-5 py-12 sm:px-8">
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+          <a class="text-muted transition-colors hover:text-amber" href={`${appBase(app)}/privacy`}>
+            Privacy policy
+          </a>
+          <a class="text-muted transition-colors hover:text-amber" href={`mailto:${meta.email}`}>
+            Support
+          </a>
+          {
+            store && (
+              <a
+                class="text-muted transition-colors hover:text-amber"
+                href={store}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Google Play
+              </a>
+            )
+          }
+        </div>
+
+        <p class="mt-8 text-sm leading-7 text-muted">
+          {app.name} is made by{" "}
+          <a
+            class="font-semibold text-amber transition-colors hover:text-ink"
+            href={SITE_URL}
+            target="_blank"
+            rel="noopener noreferrer">{meta.name}</a
+          >, an independent developer in India.
+        </p>
+        <p class="mt-2 text-sm text-muted">© {year} {meta.name}</p>
+      </div>
+    </footer>
+
+    <style is:global>
+      /*
+       * The app's own flavour, sampled from its store artwork: the near-black
+       * of the cloth the board is photographed on, the brass gold of the
+       * wordmark, and the serif that artwork is set in. These override the
+       * portfolio tokens global.css puts on :root, so every colour utility
+       * follows and the page sits inside its own photographs.
+       */
+      html[data-app] {
+        --theme-paper: #0c0b12;
+        --theme-ink: #f2ece0;
+        --theme-amber: #dba24d;
+        --theme-amber-light: rgba(219, 162, 77, 0.1);
+        --theme-muted: #9c9484;
+        --theme-border: rgba(242, 236, 224, 0.13);
+        --theme-card-bg: #15131c;
+        --theme-card-hover: #1d1a25;
+
+        --font-display: "Playfair Display", Georgia, serif;
+        --font-body: "Source Sans 3", "Noto Sans Devanagari", sans-serif;
+        --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+        color-scheme: dark;
+      }
+
+      /* global.css sets the body face literally, not through a variable. */
+      html[data-app] body {
+        font-family: "Source Sans 3", "Noto Sans Devanagari", sans-serif;
+      }
+
+      /* The paper grain is the portfolio's texture. The board's ground is flat. */
+      html[data-app] body::before {
+        display: none;
+      }
+
+      /* A single warm light source behind the top of the page. */
+      html[data-app] body::after {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 720px;
+        z-index: -1;
+        pointer-events: none;
+        background: radial-gradient(
+          75% 100% at 50% 0%,
+          rgba(219, 162, 77, 0.13),
+          transparent 72%
+        );
+      }
+    </style>
+  </body>
+</html>

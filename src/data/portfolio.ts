@@ -70,6 +70,15 @@ export interface AppSection {
   note?: string;
 }
 
+/**
+ * A phone screenshot on an app page. `file` names an image in
+ * src/assets/apps/, which the page resolves so Astro can optimise it.
+ */
+export interface AppShot {
+  file: string;
+  alt: string;
+}
+
 /** Rendered as a list and emitted as FAQPage JSON-LD. */
 export interface AppFaq {
   question: string;
@@ -92,6 +101,18 @@ export interface App {
    */
   hosted: boolean;
   packageName?: string;
+  /** App icon in src/assets/apps/, shown beside the name in the page hero. */
+  icon?: string;
+  /** Wide image anchoring the app page hero, from src/assets/apps/. */
+  heroImage?: AppShot;
+  /** Store artwork for the app page gallery, from src/assets/apps/. */
+  screenshots?: AppShot[];
+  /** Short factual chips under the hero buttons, e.g. "Works offline". */
+  highlights?: string[];
+  /** Social preview image in public/. Falls back to the site-wide card. */
+  ogImage?: string;
+  /** schema.org applicationCategory, e.g. "GameApplication". */
+  appCategory?: string;
   links: Record<string, string>;
   /** Overrides the title and meta description derived from name and tagline. */
   seo?: { title: string; description: string };
@@ -226,15 +247,57 @@ export const apps: App[] = [
     seo: {
       title: "Pachisi — the Indian original, played by its real rules",
       description:
-        "The game Ludo was flattened out of. Six cowrie shells, castles, doubled pieces, and an exact count home. Free, offline, in English and हिन्दी.",
+        "The game Ludo was flattened out of — Chaupar, Chausar, Pachisi. Six cowrie shells, castles, doubled pieces, and an exact count home. Free, offline, in English and हिन्दी.",
     },
     lead:
       "Pachisi is the game Ludo was flattened out of, and this is the original. Six cowrie shells instead of a die. Castles instead of a protected home lane. Pieces that pair up and travel as one. Play it offline against three levels of computer opponent, or pass the phone around for two or four players — on a board that keeps the rules the West left behind.",
     tags: ["React Native", "Expo", "TypeScript"],
     featured: false,
-    status: "coming-soon",
+    status: "live",
     hosted: true,
     packageName: "com.g1mishra.pachisi",
+    icon: "pachisi-icon.png",
+    ogImage: "/pachisi-og.jpg",
+    appCategory: "GameApplication",
+    highlights: ["Free, with ads", "No account", "Works offline", "English & हिन्दी"],
+    heroImage: {
+      file: "pachisi-board.jpg",
+      alt: "An embroidered cloth Pachisi board laid on dark cloth, with wooden pawns, a brass lamp and cowrie shells.",
+    },
+    screenshots: [
+      {
+        file: "pachisi-cloth.jpg",
+        alt: "The full cloth board, captioned \"India's game. Not Ludo.\"",
+      },
+      {
+        file: "pachisi-twenty-five.jpg",
+        alt: "Six cowrie shells falling into a brass dish: no shell mouth-up counts twenty-five.",
+      },
+      {
+        file: "pachisi-castle.jpg",
+        alt: "A pawn safe on a marked castle square, out of reach of the pawn behind it.",
+      },
+      {
+        file: "pachisi-capture.jpg",
+        alt: "A pawn landing on an exact count and sending an opponent's pawn home.",
+      },
+      {
+        file: "pachisi-doubled-piece.jpg",
+        alt: "Two pawns of one colour locked together on a square, travelling as a single piece.",
+      },
+      {
+        file: "pachisi-lesson.jpg",
+        alt: "The in-app lesson highlighting a pawn, on step two of five: throw the shells.",
+      },
+      {
+        file: "pachisi-players.jpg",
+        alt: "The board ringed by four seats, and a choice of one, two or four players.",
+      },
+      {
+        file: "pachisi-offline.jpg",
+        alt: "The board beside a brass lamp: no account, no internet, ever.",
+      },
+    ],
     sections: [
       {
         heading: "How a throw works",
@@ -286,15 +349,41 @@ export const apps: App[] = [
       {
         question: "Can I play with friends?",
         answer:
-          "Two or four players on one device, passing the phone around. There is no online multiplayer in this version.",
+          "Two or four players on one device, passing the phone around. Four players play as two teams of two.",
+      },
+      {
+        question: "Is there online multiplayer?",
+        answer:
+          "Not yet. Room play — a private room you open and share with a friend, so you can play from different phones — is the next thing I'm building. It has no date yet; the Play Store listing is where it will turn up first.",
       },
       {
         question: "I don't know the rules.",
         answer:
           "The app teaches them in about three minutes, on a real board, one move at a time.",
       },
+      {
+        question: "Can I play in Hindi?",
+        answer: "Yes. The game is translated in full — English and हिन्दी.",
+      },
+      {
+        question: "Does it save my game?",
+        answer:
+          "Yes. Leave in the middle of a match and the home screen offers to resume it, on the same turn you left.",
+      },
+      {
+        question: "How hard are the computer opponents?",
+        answer:
+          "Three strengths — easy, medium and hard — picked when you start a new game.",
+      },
+      {
+        question: "I find the colours hard to tell apart.",
+        answer:
+          "Every colour also carries its own shape, so the board can be read without relying on colour at all.",
+      },
     ],
-    links: {},
+    links: {
+      playStore: "https://play.google.com/store/apps/details?id=com.g1mishra.pachisi",
+    },
     privacy: {
       effective: "2026-08-21",
       summary:

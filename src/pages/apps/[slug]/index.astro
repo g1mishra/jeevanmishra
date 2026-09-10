@@ -1,8 +1,9 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import Nav from "../../../components/Nav.astro";
-import Footer from "../../../components/Footer.astro";
-import { apps, appBase, appOrigin, SITE_URL } from "../../../data/portfolio";
+import { Image } from "astro:assets";
+import AppLayout from "../../../layouts/AppLayout.astro";
+import AppStoreLinks from "../../../components/AppStoreLinks.astro";
+import { appAsset } from "../../../data/appAssets";
+import { apps, appOrigin } from "../../../data/portfolio";
 
 // Only apps whose pages live on this site. Each one is served at its own
 // subdomain; apps with their own domain are linked out to from /apps instead.
@@ -13,6 +14,12 @@ export function getStaticPaths() {
 }
 
 const { app } = Astro.props;
+
+const heroImage = appAsset(app.heroImage?.file);
+const gallery = (app.screenshots ?? []).flatMap((shot) => {
+  const image = appAsset(shot.file);
+  return image ? [{ ...shot, image }] : [];
+});
 
 // Google reads this for the FAQ rich result; it has to mirror what is on the
 // page, so both render from the same data.
@@ -25,94 +32,138 @@ const faqSchema = app.faq && {
     acceptedAnswer: { "@type": "Answer", text: item.answer },
   })),
 };
-
-const linkLabels: Record<string, string> = {
-  playStore: "Get it on Google Play →",
-  appStore: "Download on the App Store →",
-  live: "Open the app →",
-};
 ---
 
-<Layout
+<AppLayout
+  app={app}
   title={app.seo?.title ?? `${app.name} — ${app.tagline}`}
   description={app.seo?.description ?? app.description}
+  ogImage={app.ogImage}
   canonical={`${appOrigin(app)}/`}
   schemas={faqSchema ? [faqSchema] : []}
 >
-  <Nav base={SITE_URL} />
+  <main class="mx-auto w-full max-w-5xl px-5 pt-10 pb-4 sm:px-8 sm:pt-16">
+    <section class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <div>
+        {
+          app.status === "coming-soon" && (
+            <p class="mb-8 inline-flex items-center gap-2 rounded-full border border-amber/30 bg-amber-light px-4 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-amber">
+              Coming soon
+            </p>
+          )
+        }
 
-  <main class="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-20" transition:animate="slide">
-    <a
-      class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber transition-colors hover:text-amber-light"
-      href={`${SITE_URL}/apps`}>← All apps</a
-    >
-
-    {
-      app.status === "coming-soon" && (
-        <p class="mt-10 inline-flex items-center gap-2 rounded-full border border-amber/30 bg-amber-light px-4 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber">
-          Coming soon
+        <h1 class="font-display text-6xl font-bold leading-none text-amber sm:text-7xl">
+          {app.name}
+        </h1>
+        <p class="mt-6 text-xl leading-8 text-ink/80">
+          {app.tagline}
         </p>
-      )
-    }
 
-    <h1 class="mt-6 font-display text-6xl font-semibold leading-none text-ink sm:text-7xl reveal">
-      {app.name}
-    </h1>
-    <p class="mt-6 text-xl leading-8 text-muted reveal" style="animation-delay: 0.1s">
-      {app.tagline}
-    </p>
+        <AppStoreLinks links={app.links} class="mt-9" />
 
-    <div class="mt-8 flex flex-wrap gap-3 reveal" style="animation-delay: 0.15s">
+        {
+          app.highlights && (
+            <ul class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-bold uppercase tracking-[0.12em] text-muted">
+              {app.highlights.map((highlight) => (
+                <li class="flex items-center gap-2">
+                  <span class="h-1 w-1 shrink-0 rounded-full bg-amber" />
+                  {highlight}
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
       {
-        app.tags.map((tag) => (
-          <span class="rounded-full border border-border bg-card px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-widest text-muted">
-            {tag}
-          </span>
-        ))
+        heroImage && (
+          <div class="overflow-hidden rounded-3xl border border-border shadow-2xl">
+            <Image
+              src={heroImage}
+              alt={app.heroImage!.alt}
+              width={1100}
+              class="block w-full"
+              loading="eager"
+            />
+          </div>
+        )
       }
-    </div>
+    </section>
 
-    <p class="mt-12 text-lg leading-8 text-muted reveal" style="animation-delay: 0.2s">
+    <p class="mt-20 text-lg leading-8 text-muted reveal">
       {app.lead ?? app.description}
     </p>
 
     {
-      app.sections?.map((section, i) => (
-        <section class="mt-16 reveal" style={`animation-delay: ${0.25 + i * 0.05}s`}>
-          <h2 class="font-display text-3xl font-semibold text-ink">{section.heading}</h2>
+      gallery.length > 0 && (
+        <section class="mt-16 reveal">
+          <div class="-mx-5 flex gap-4 overflow-x-auto px-5 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
+            {gallery.map((shot) => (
+              <figure class="w-[224px] shrink-0 sm:w-full">
+                <div class="overflow-hidden rounded-2xl border border-border">
+                  <Image
+                    src={shot.image}
+                    alt={shot.alt}
+                    width={560}
+                    class="block w-full"
+                    loading="lazy"
+                  />
+                </div>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )
+    }
 
-          {section.lead && (
-            <p class="mt-6 text-lg leading-8 text-muted">{section.lead}</p>
-          )}
+    {
+      app.sections?.map((section) => (
+        <section class="mt-24 reveal">
+          <h2 class="font-display text-4xl font-bold text-ink sm:text-5xl">{section.heading}</h2>
 
-          {section.table && (
-            <div class="mt-6 overflow-x-auto">
-              <table class="w-full border-collapse text-left text-lg">
-                <thead>
-                  <tr>
-                    {section.table.columns.map((column) => (
-                      <th class="border-b border-border py-3 pr-6 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-                        {column}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {section.table.rows.map(([left, right]) => (
-                    <tr>
-                      <td class="border-b border-border py-3 pr-6 font-semibold text-ink whitespace-nowrap">
-                        {left}
-                      </td>
-                      <td class="border-b border-border py-3 leading-8 text-muted">{right}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {section.lead && <p class="mt-6 text-lg leading-8 text-muted">{section.lead}</p>}
+
+          {(section.table || section.note) && (
+            <div class="mt-8 space-y-6">
+              {section.table && (
+                <div class="overflow-x-auto rounded-2xl border border-border bg-card p-2 sm:p-4">
+                  <table class="w-full border-collapse text-left text-lg">
+                    <thead>
+                      <tr>
+                        {section.table.columns.map((column) => (
+                          <th class="border-b border-border px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-muted">
+                            {column}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {section.table.rows.map(([left, right]) => (
+                        <tr>
+                          <td class="border-b border-border px-4 py-3 font-bold whitespace-nowrap text-amber">
+                            {left}
+                          </td>
+                          <td class="border-b border-border px-4 py-3 leading-8 text-muted">
+                            {right}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {section.note && (
+                <p class="rounded-2xl border border-amber/25 bg-amber-light px-6 py-5 text-lg leading-8 text-muted">
+                  {section.note}
+                </p>
+              )}
             </div>
           )}
 
           {section.bullets && (
-            <ul class="mt-6 space-y-4 text-lg leading-8 text-muted">
+            <ul class="mt-8 space-y-4 text-lg leading-8 text-muted">
               {section.bullets.map((bullet) => (
                 <li class="flex gap-4">
                   <span class="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-amber" />
@@ -121,25 +172,19 @@ const linkLabels: Record<string, string> = {
               ))}
             </ul>
           )}
-
-          {section.note && (
-            <p class="mt-6 border-l-2 border-amber/40 pl-5 text-lg leading-8 text-muted">
-              {section.note}
-            </p>
-          )}
         </section>
       ))
     }
 
     {
       app.faq && (
-        <section class="mt-16 reveal" style="animation-delay: 0.4s">
-          <h2 class="font-display text-3xl font-semibold text-ink">Questions</h2>
-          <dl class="mt-6 space-y-6 text-lg leading-8">
+        <section class="mt-24 reveal">
+          <h2 class="font-display text-4xl font-bold text-ink sm:text-5xl">Questions</h2>
+          <dl class="mt-8 space-y-4">
             {app.faq.map((item) => (
-              <div>
-                <dt class="font-semibold text-ink">{item.question}</dt>
-                <dd class="mt-2 text-muted">{item.answer}</dd>
+              <div class="rounded-2xl border border-border bg-card p-6">
+                <dt class="font-display text-xl font-semibold text-ink">{item.question}</dt>
+                <dd class="mt-2 text-lg leading-8 text-muted">{item.answer}</dd>
               </div>
             ))}
           </dl>
@@ -149,38 +194,12 @@ const linkLabels: Record<string, string> = {
 
     {
       Object.keys(app.links).length > 0 && (
-        <div class="mt-14 flex flex-wrap gap-5 text-sm font-semibold reveal">
-          {Object.entries(app.links).map(([key, href]) => (
-            <a
-              class="inline-flex items-center justify-center rounded-full bg-ink px-6 py-2.5 !text-paper transition hover:scale-105 hover:bg-ink/80"
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {linkLabels[key] ?? key}
-            </a>
-          ))}
-        </div>
+        <section class="mt-24 rounded-3xl border border-amber/25 bg-amber-light px-8 py-14 text-center reveal sm:px-14">
+          <h2 class="font-display text-4xl font-bold text-amber sm:text-5xl">Get {app.name}</h2>
+          <p class="mx-auto mt-5 max-w-xl text-lg leading-8 text-ink/80">{app.tagline}</p>
+          <AppStoreLinks links={app.links} class="mt-9 justify-center" />
+        </section>
       )
     }
-
-    <div class="mt-20 border-t border-border pt-8 text-sm text-muted">
-      <p>
-        {app.packageName && (
-          <span class="font-mono text-xs">{app.packageName}</span>
-        )}
-      </p>
-      <p class="mt-3">
-        <a class="text-amber transition-colors hover:text-ink" href={`${appBase(app)}/privacy`}>
-          Privacy policy
-        </a>
-        <span class="mx-2 text-border">·</span>
-        <a class="transition-colors hover:text-ink" href="mailto:g1mishra.dev@gmail.com">
-          Support
-        </a>
-      </p>
-    </div>
   </main>
-
-  <Footer base={SITE_URL} />
-</Layout>
+</AppLayout>
