@@ -35,6 +35,20 @@ export interface ThirdParty {
 }
 
 /**
+ * An SDK inside the app that sends data off the device. `collects` is the
+ * same list that goes on the Play Console Data safety form: the policy and
+ * the form have to be written from one list, or app review finds the gap.
+ */
+export interface AppService extends ThirdParty {
+  /** What leaves the device, one row per Data safety category. */
+  collects: string[];
+  /** Body copy for the service's own section of the policy. */
+  note: string;
+  /** How long the service keeps what it receives. */
+  retention?: string;
+}
+
+/**
  * Drives the generated privacy policy at /apps/<slug>/privacy.
  * Only apps whose pages are hosted on this site carry one — apps with their
  * own domain (JaapMitra, Saarthi) publish their policy there instead.
@@ -45,13 +59,24 @@ export interface AppPrivacy {
   collectsPersonalData: boolean;
   requiresAccount: boolean;
   worksOffline: boolean;
+  /**
+   * Where questions go. Must equal the support address the app itself uses
+   * (SUPPORT_EMAIL in the app repo's src/services/links.ts): the app, the
+   * store listing and this policy name one contact, or the policy contradicts
+   * the app it describes.
+   */
+  contactEmail: string;
   /** What the app writes to the device, staying on the device. */
   onDeviceData: string[];
-  advertising: { network: string; policyUrl: string; note: string } | null;
+  /** Ad network. Null means the app shows no ads. */
+  advertising: AppService | null;
   /** Crash / diagnostic reports that LEAVE the device. Null means none are sent. */
-  diagnostics: { service: string; policyUrl: string; note: string; retention: string } | null;
+  diagnostics: AppService | null;
+  /** Product analytics. Null means the app measures nothing. */
+  analytics: AppService | null;
   permissions: { name: string; reason: string }[];
   childDirected: boolean;
+  /** Anything else that receives data, beyond the three slots above. */
   thirdParties: ThirdParty[];
 }
 
@@ -385,35 +410,65 @@ export const apps: App[] = [
       playStore: "https://play.google.com/store/apps/details?id=com.g1mishra.pachisi",
     },
     privacy: {
-      effective: "2026-08-21",
+      effective: "2026-09-12",
       summary:
-        "Pachisi is an offline game. It has no accounts, no sign-in, and no servers of mine — I never receive any information about you. The only data that leaves your device is what Google's ad service collects to show ads, and a crash report if the app stops working.",
+        "Pachisi is an offline game. It has no account, no sign-in, and no servers of mine, so I never receive anything that identifies you and there is nothing of yours for me to delete. Three Google SDKs inside the app do send data to Google: AdMob to show ads, Crashlytics to report a crash, and Google Analytics for Firebase to tell me how the game is played. This page names each one, what it receives, how long it is kept, and how you can limit it.",
       collectsPersonalData: false,
       requiresAccount: false,
       worksOffline: true,
+      contactEmail: "g1mishra.dev@gmail.com",
       onDeviceData: [
         "Your saved game (board position, whose turn it is, and the move history needed to resume it)",
-        "Your settings, such as sound and haptics preferences",
+        "Your settings: sound, haptics, language, and the last mode, seat count and difficulty you picked",
+        "Your lifetime record against the computer, and which lessons you have finished",
       ],
       advertising: {
-        network: "Google AdMob",
+        name: "Google AdMob",
+        purpose: "Showing ads",
         policyUrl: "https://policies.google.com/technologies/ads",
+        collects: [
+          "Your device's Advertising ID",
+          "Ad interactions: which ads were shown, viewed or tapped",
+          "Approximate location, worked out by Google from your IP address",
+          "Technical details of your device and the app, such as model, OS version and build",
+        ],
         note:
-          "Ads are served by Google AdMob. To show them, Google's SDK may collect your device's Advertising ID along with technical device and ad-interaction information. This happens inside Google's SDK — I never see or store it.",
+          "Ads are served by Google AdMob, through the Google Mobile Ads SDK. To show them, the SDK sends Google your device's Advertising ID, technical details about your device and the app, and which ads were shown, viewed or tapped. Google also works out an approximate location, roughly to the city, from the IP address of your connection; the app itself never asks for location permission. Ad content is limited to Google's teen rating and no user is treated as a child. All of this happens inside Google's SDK: I never see or store it, and Google shares it with its advertising partners under its own terms.",
       },
       diagnostics: {
-        service: "Google Firebase Crashlytics",
+        name: "Google Firebase Crashlytics",
+        purpose: "Reporting crashes",
         policyUrl: "https://firebase.google.com/support/privacy",
+        collects: [
+          "Crash logs and stack traces",
+          "Device model, operating system version and app build",
+          "A random installation identifier Google generates for the app on your device",
+        ],
         note:
-          "If the app crashes, a diagnostic report is sent to Google Firebase Crashlytics so I can find the fault and fix it. The report describes the failure — the error, the stack trace, your device model and operating system version, and which build of the app you were running — along with a random installation identifier Google generates for the app on your device. It carries no name, no email address, no contact detail, and nothing about how you play.",
+          "If the app crashes, a diagnostic report is sent to Google Firebase Crashlytics so I can find the fault and fix it. The report describes the failure: the error, the stack trace, your device model and operating system version, and which build of the app you were running, along with a random installation identifier Google generates for the app on your device. It carries no name, no email address, no contact detail, and nothing about how you play.",
         retention:
-          "Crash reports sent to Google Firebase Crashlytics are governed by Google's retention policies; Crashlytics deletes individual reports after 90 days.",
+          "Crashlytics deletes individual crash reports after 90 days.",
+      },
+      analytics: {
+        name: "Google Analytics for Firebase",
+        purpose: "Measuring how the game is played",
+        policyUrl: "https://firebase.google.com/support/privacy",
+        collects: [
+          "An app-instance id: a random identifier for this installation of the app, not for you",
+          "App interactions: a game starting, ending or being abandoned, the mode and difficulty, a lesson finished or left, whether a game-end ad appeared, frame timing, and the screens visited",
+          "Device model, operating system version, the language the app is showing, and app build",
+          "Approximate location, worked out by Google from your IP address",
+        ],
+        note:
+          "The app uses Google Analytics for Firebase to answer a handful of questions about how the game is played: whether matches get finished, which mode and difficulty people choose, whether the lessons get completed, how often a game-end ad actually appeared, and whether the board drops frames on a given phone. Seven events in all, plus the screens visited, the language the app is speaking and which build you are on. The SDK also records installs, sessions, updates and uninstalls on its own, and, when an ad is shown, that it was shown and roughly what it earned. Every event is tied to an app-instance id, a random identifier the SDK creates for this installation; it identifies the installation, not you, and a fresh one is issued if you reinstall. Google also derives an approximate location from the IP address. The Advertising ID is deliberately not collected for analytics, so this data cannot be joined to the advertising profile above. Individual throws and moves are never logged.",
+        retention:
+          "Google Analytics keeps the app-instance id and the events tied to it for 14 months, then deletes them automatically. Aggregated figures, such as how many matches were finished in a month, outlive that, but describe no individual device.",
       },
       permissions: [
         {
           name: "Internet access",
           reason:
-            "Used to load ads and to send a crash report if the app stops working. Every part of the game itself works with no connection.",
+            "Used to load ads, to send a crash report if the app stops working, and to send the analytics events described above. Every part of the game itself works with no connection.",
         },
         {
           name: "Vibration",
@@ -421,18 +476,7 @@ export const apps: App[] = [
         },
       ],
       childDirected: false,
-      thirdParties: [
-        {
-          name: "Google AdMob",
-          purpose: "Serving ads inside the app",
-          policyUrl: "https://policies.google.com/privacy",
-        },
-        {
-          name: "Google Firebase Crashlytics",
-          purpose: "Reporting crashes so they can be fixed",
-          policyUrl: "https://firebase.google.com/support/privacy",
-        },
-      ],
+      thirdParties: [],
     },
   },
 ];

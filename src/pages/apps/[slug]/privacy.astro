@@ -1,6 +1,7 @@
 ---
 import AppLayout from "../../../layouts/AppLayout.astro";
 import { apps, meta, appBase, appOrigin } from "../../../data/portfolio";
+import type { AppService } from "../../../data/portfolio";
 
 export function getStaticPaths() {
   return apps
@@ -18,6 +19,23 @@ const effectiveDate = new Date(privacy.effective).toLocaleDateString("en-GB", {
   month: "long",
   year: "numeric",
 });
+
+/** Every SDK that sends data off the device, in the order the policy discusses them. */
+const services: AppService[] = [privacy.advertising, privacy.diagnostics, privacy.analytics].filter(
+  (service): service is AppService => service !== null,
+);
+
+const count = ["no", "one", "two", "three", "four"][services.length] ?? String(services.length);
+
+/** "Google AdMob — showing ads; Google Firebase Crashlytics — reporting crashes; …" */
+const servicesInline = services
+  .map((service) => `${service.name} — ${service.purpose.replace(/^./, (c) => c.toLowerCase())}`)
+  .join("; ");
+
+/** Services with a stated retention period, other than advertising (covered separately). */
+const retained = services.filter(
+  (service) => service.retention && service !== privacy.advertising,
+);
 
 let section = 0;
 const n = () => String(++section).padStart(2, "0");
@@ -75,9 +93,7 @@ const n = () => String(++section).padStart(2, "0");
           {
             privacy.collectsPersonalData
               ? "The app collects the personal information described below."
-              : privacy.diagnostics
-                ? "I do not collect, store, or transmit any personal information about you. The app has no analytics, no tracking of your behaviour, and no servers of mine that it talks to. It does send a crash report when it stops working, described below — that report carries nothing personal."
-                : "I do not collect, store, or transmit any personal information about you. The app has no analytics, no crash reporting, no tracking of your behaviour, and no servers of mine that it talks to."
+              : "I do not myself collect, store, or transmit any personal information about you. The app has no servers of mine that it talks to, and nothing you do inside it reaches me in a form that could identify you."
           }
         </p>
         {
@@ -89,12 +105,57 @@ const n = () => String(++section).padStart(2, "0");
           )
         }
         {
+          services.length > 0 && (
+            <>
+              <p class="mt-4">
+                The app does include {count} Google {services.length === 1 ? "SDK" : "SDKs"} that{" "}
+                {services.length === 1 ? "sends" : "send"} some information to Google:{" "}
+                {servicesInline}. Each is described in its own section below. Here is what they
+                receive, in one place:
+              </p>
+              <div class="mt-8 overflow-x-auto rounded-2xl border border-border bg-card p-2 sm:p-4">
+                <table class="w-full border-collapse text-left text-lg">
+                  <thead>
+                    <tr>
+                      <th class="border-b border-border px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-muted">
+                        Service
+                      </th>
+                      <th class="border-b border-border px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-muted">
+                        What leaves your device
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {services.map((service) => (
+                      <tr>
+                        <td class="border-b border-border px-4 py-3 align-top font-bold text-amber sm:whitespace-nowrap">
+                          {service.name}
+                          <span class="mt-1 block text-sm font-normal text-muted">{service.purpose}</span>
+                        </td>
+                        <td class="border-b border-border px-4 py-3 align-top leading-8 text-muted">
+                          <ul class="ml-4 space-y-1">
+                            {service.collects.map((item) => (
+                              <li class="list-disc">{item}</li>
+                            ))}
+                          </ul>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p class="mt-6">
+                Nothing else leaves the device: no name, no email address, no contacts, no
+                precise location, no files. None of these services receives anything from me
+                that could identify you, and all of them encrypt what they send in transit.
+              </p>
+            </>
+          )
+        }
+        {
           privacy.worksOffline && (
             <p class="mt-4">
-              The app runs entirely on your device.{" "}
-              {privacy.diagnostics
-                ? "Apart from a crash report when something goes wrong, nothing you do inside it is sent anywhere for me to see."
-                : "Nothing you do inside it is sent anywhere for me to see."}
+              The game itself runs entirely on your device and works with no connection at all.
             </p>
           )
         }
@@ -126,26 +187,17 @@ const n = () => String(++section).padStart(2, "0");
               <span class="text-amber">{n()}.</span> Advertising
             </h2>
             <p class="mt-4">{privacy.advertising.note}</p>
+            {privacy.advertising.retention && <p class="mt-4">{privacy.advertising.retention}</p>}
             <p class="mt-4">
-              You can limit this at any time from your device settings. On Android, open{" "}
-              <strong class="font-medium text-ink">
-                Settings → Privacy → Ads
-              </strong>{" "}
-              to delete or reset your Advertising ID, or to opt out of ad personalisation
-              entirely. The app keeps working normally either way.
-            </p>
-            <p class="mt-4">
-              How {privacy.advertising.network} handles this information is governed by its own
-              policy, which you can read here:{" "}
+              How {privacy.advertising.name} handles this information is governed by Google's
+              own policy, which you can read here:{" "}
               <a
                 class="text-amber underline underline-offset-4 transition-colors hover:text-ink"
                 href={privacy.advertising.policyUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-              >
-                {privacy.advertising.policyUrl}
-              </a>
-              .
+                >{privacy.advertising.policyUrl}</a
+              >.
             </p>
           </section>
         )
@@ -158,19 +210,78 @@ const n = () => String(++section).padStart(2, "0");
               <span class="text-amber">{n()}.</span> Crash reporting
             </h2>
             <p class="mt-4">{privacy.diagnostics.note}</p>
+            {privacy.diagnostics.retention && <p class="mt-4">{privacy.diagnostics.retention}</p>}
             <p class="mt-4">
-              How {privacy.diagnostics.service} handles this information is governed by its own
-              policy, which you can read here:{" "}
+              How {privacy.diagnostics.name} handles this information is governed by Google's
+              own policy, which you can read here:{" "}
               <a
                 class="text-amber underline underline-offset-4 transition-colors hover:text-ink"
                 href={privacy.diagnostics.policyUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-              >
-                {privacy.diagnostics.policyUrl}
-              </a>
-              .
+                >{privacy.diagnostics.policyUrl}</a
+              >.
             </p>
+          </section>
+        )
+      }
+
+      {
+        privacy.analytics && (
+          <section>
+            <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+              <span class="text-amber">{n()}.</span> Analytics
+            </h2>
+            <p class="mt-4">{privacy.analytics.note}</p>
+            {privacy.analytics.retention && <p class="mt-4">{privacy.analytics.retention}</p>}
+            <p class="mt-4">
+              How {privacy.analytics.name} handles this information is governed by Google's
+              own policy, which you can read here:{" "}
+              <a
+                class="text-amber underline underline-offset-4 transition-colors hover:text-ink"
+                href={privacy.analytics.policyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                >{privacy.analytics.policyUrl}</a
+              >.
+            </p>
+          </section>
+        )
+      }
+
+      {
+        (privacy.advertising || privacy.analytics) && (
+          <section>
+            <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
+              <span class="text-amber">{n()}.</span> Your choices
+            </h2>
+            {privacy.advertising && (
+              <p class="mt-4">
+                <strong class="font-medium text-ink">Your Advertising ID</strong> is controlled by
+                Android, not by the app. Open{" "}
+                <strong class="font-medium text-ink">Settings → Privacy → Ads</strong> (on some
+                phones, Settings → Google → Ads). There you can{" "}
+                <strong class="font-medium text-ink">reset</strong> the ID, which breaks the link
+                to anything collected under the old one, or{" "}
+                <strong class="font-medium text-ink">delete</strong> it, after which apps receive a
+                string of zeros in its place and ads can no longer be personalised to you. The app
+                keeps working normally either way; you simply see less relevant ads.
+              </p>
+            )}
+            {privacy.advertising && (
+              <p class="mt-4">
+                <strong class="font-medium text-ink">Ad personalisation and consent.</strong> In
+                regions where the law requires it, such as the European Economic Area and the
+                United Kingdom, the app shows Google's consent form the first time it runs, and
+                ads are personalised only if you agreed. You can review or change that answer at
+                any time from inside the app, at{" "}
+                <strong class="font-medium text-ink">Settings → Ad privacy options</strong>.
+                {privacy.analytics &&
+                  " The same answer governs analytics: where a consent form applies, nothing is measured until you have answered it, and your choice is respected afterwards."}{" "}
+                Outside those regions there is no consent form to reopen, so that row does not
+                appear in Settings; the Android controls above still apply.
+              </p>
+            )}
           </section>
         )
       }
@@ -189,6 +300,10 @@ const n = () => String(++section).padStart(2, "0");
                 </li>
               ))}
             </ul>
+            <p class="mt-6">
+              The app does not ask for location, camera, microphone, contacts, or storage
+              permissions.
+            </p>
           </section>
         )
       }
@@ -197,11 +312,11 @@ const n = () => String(++section).padStart(2, "0");
         privacy.thirdParties.length > 0 && (
           <section>
             <h2 class="flex items-center gap-4 font-display text-2xl font-semibold text-ink">
-              <span class="text-amber">{n()}.</span> Third-party services
+              <span class="text-amber">{n()}.</span> Other third-party services
             </h2>
             <p class="mt-4">
-              The app includes the following third-party services. Each one handles data under
-              its own privacy policy, not mine:
+              The app also includes the following services. Each one handles data under its own
+              privacy policy, not mine:
             </p>
             <ul class="mt-6 space-y-5">
               {privacy.thirdParties.map((party) => (
@@ -230,7 +345,7 @@ const n = () => String(++section).padStart(2, "0");
           {
             privacy.childDirected
               ? "The app is directed at children and is designed to comply with the Google Play Families policy and applicable children's privacy laws."
-              : "The app is not directed at children under 13, and I do not knowingly collect any information from them. Because the app collects no personal information from anyone, it holds nothing belonging to a child. If you believe otherwise, contact me and I will look into it."
+              : `${app.name} is intended for people aged 13 and over. It is not directed at children under 13, is not part of Google Play's Families programme, and I do not knowingly collect information from anyone under 13. Because there is no account, the app holds nothing that could name a child. If you believe a child under 13 has used the app and that information about them has reached one of the services above, contact me and I will help you address it, including through Google's own controls.`
           }
         </p>
       </section>
@@ -240,20 +355,38 @@ const n = () => String(++section).padStart(2, "0");
           <span class="text-amber">{n()}.</span> Keeping and deleting your data
         </h2>
         <p class="mt-4">
-          Because I hold no data about you, there is nothing on my side to request, export, or
-          delete. Everything the app saves lives on your device and is entirely under your
-          control: clear the app's storage from your device settings, or uninstall the app, and
-          it is gone for good.
+          There is no account, so there is nothing to delete on my side: I hold no data about
+          you to request, export, or erase, and the app has no delete-my-account function
+          because there is no account to delete. Everything the app saves lives on your device
+          and is entirely under your control: clear the app's storage from your device settings,
+          or uninstall the app, and it is gone for good.
         </p>
         {
-          privacy.advertising && (
-            <p class="mt-4">
-              Advertising data held by {privacy.advertising.network} is governed by Google's
-              retention policies and by your Advertising ID settings, described above.
-            </p>
+          services.length > 0 && (
+            <>
+              <p class="mt-4">
+                What Google receives through the services above is held by Google under its own
+                retention rules, not by me:
+              </p>
+              <ul class="mt-6 space-y-3 pl-5">
+                {privacy.advertising && (
+                  <li class="list-disc">
+                    <strong class="font-medium text-ink">{privacy.advertising.name}</strong> —
+                    governed by Google's advertising retention policies and by your Advertising
+                    ID. Resetting or deleting the ID, as described above, is how you break the
+                    link to anything collected under it.
+                  </li>
+                )}
+                {retained.map((service) => (
+                  <li class="list-disc">
+                    <strong class="font-medium text-ink">{service.name}</strong> —{" "}
+                    {service.retention}
+                  </li>
+                ))}
+              </ul>
+            </>
           )
         }
-        {privacy.diagnostics && <p class="mt-4">{privacy.diagnostics.retention}</p>}
       </section>
 
       <section>
@@ -275,8 +408,8 @@ const n = () => String(++section).padStart(2, "0");
           Questions about this policy, or about the app in general, reach me directly at{" "}
           <a
             class="text-amber underline underline-offset-4 transition-colors hover:text-ink"
-            href={`mailto:${meta.email}`}>{meta.email}</a
-          >. I read everything.
+            href={`mailto:${privacy.contactEmail}`}>{privacy.contactEmail}</a
+          >. It is the same address the app's own feedback button writes to. I read everything.
         </p>
       </section>
     </div>
