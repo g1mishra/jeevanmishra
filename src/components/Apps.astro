@@ -1,92 +1,12 @@
 ---
-import { apps, appUrl } from "../data/portfolio";
-import { Image } from "astro:assets";
-import jaapmitraFeature from "../assets/jaapmitra-feature.png";
-import saarthiFeature from "../assets/saarthi-feature.png";
-
-const appImages: Record<string, any> = {
-  "JaapMitra": jaapmitraFeature,
-  "Saarthi": saarthiFeature,
-};
-
-const linkLabels: Record<string, string> = {
-  playStore: "Play Store →",
-  landing: "Landing →",
-  live: "Live App →",
-};
-
-// The homepage shows the flagships only. Everything else lives at /apps.
+import { apps } from "../data/portfolio";
+import AppCard from "./AppCard.astro";
 const featuredApps = apps.filter((app) => app.featured);
 ---
-
 <section id="apps" class="reveal scroll-mt-24 border-b border-border py-16 sm:py-24">
-  <div class="mb-10 flex flex-wrap items-baseline justify-between gap-4">
-    <h2 class="font-display text-4xl sm:text-5xl font-semibold text-ink">Apps</h2>
-    <a class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-muted transition-colors hover:text-amber" href="/apps">All apps →</a>
+  <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4">
+    <h2 class="font-display text-4xl font-semibold text-ink sm:text-5xl">Apps</h2>
+    <a class="text-sm font-semibold text-amber underline underline-offset-4 hover:text-ink" href="/apps">App directory &rarr;</a>
   </div>
-
-  <div class="flex flex-col gap-12">
-    {featuredApps.map((app) => (
-      <article class="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-paper via-paper to-amber-light/30 shadow-sm transition-shadow duration-500 hover:shadow-md group">
-        
-        <!-- Background glow effect on hover -->
-        <div class="absolute inset-0 bg-amber-light opacity-0 transition-opacity duration-500 group-hover:opacity-20 pointer-events-none"></div>
-        
-        <div class="grid gap-8 sm:grid-cols-[1fr_1fr] items-center p-7 sm:p-10 lg:p-12">
-          
-          <div class="relative z-10">
-            <h3 class="font-display text-3xl sm:text-4xl font-semibold text-ink">{app.name}</h3>
-            <p class="mt-4 text-lg leading-8 text-muted">{app.description}</p>
-            
-            <div class="mt-6 flex flex-wrap gap-3">
-              {app.tags.map((tag) => (
-                <span class="font-mono text-xs font-semibold uppercase tracking-widest text-muted bg-card border border-border px-3 py-1.5 rounded-full">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            
-            <div class="mt-8 flex flex-wrap gap-5 text-sm font-semibold">
-              {app.hosted && (
-                <a
-                  class="inline-flex items-center justify-center rounded-full bg-ink px-6 py-2.5 !text-paper transition hover:bg-ink/80 hover:scale-105"
-                  href={appUrl(app)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Visit site →
-                </a>
-              )}
-              {Object.entries(app.links).map(([key, href]) => (
-                <a
-                  class="inline-flex items-center justify-center rounded-full bg-ink px-6 py-2.5 !text-paper transition hover:bg-ink/80 hover:scale-105"
-                  href={href as string}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {linkLabels[key] ?? key}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div class="relative z-10 mt-6 sm:mt-0 flex justify-center sm:justify-end animate-float">
-            <div class="relative w-full max-w-sm rotate-2 transition-transform duration-700 group-hover:rotate-0 group-hover:scale-105">
-              {appImages[app.name] && (
-                <Image 
-                  src={appImages[app.name]} 
-                  alt={`${app.name} App Feature Graphic`} 
-                  class="w-full h-full rounded-2xl shadow-xl object-contain"
-                  width={800}
-                  height={400}
-                  loading="lazy"
-                />
-              )}
-            </div>
-          </div>
-          
-        </div>
-      </article>
-    ))}
-  </div>
+  <div class="grid gap-5 md:grid-cols-3">{featuredApps.map((app) => <AppCard app={app} />)}</div>
 </section>

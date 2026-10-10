@@ -1,0 +1,28 @@
+---
+import { appUrl } from "../data/portfolio";
+import type { App } from "../data/portfolio";
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import jaapmitraFeature from "../assets/jaapmitra-feature.png";
+import saarthiFeature from "../assets/saarthi-feature.png";
+import pachisiFeature from "../assets/pachisi-feature.png";
+interface Props { app: App; heading?: "h2" | "h3"; detailed?: boolean; }
+const { app, heading: Heading = "h3", detailed = false } = Astro.props;
+const images: Record<string, ImageMetadata> = { jaapmitra: jaapmitraFeature, saarthi: saarthiFeature, pachisi: pachisiFeature };
+---
+<article class:list={["overflow-hidden rounded-2xl border border-border bg-card", detailed ? "grid md:grid-cols-2 md:items-center" : "flex flex-col"]}>
+        <a href={appUrl(app)} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${app.name} website`} class:list={["block bg-paper focus-visible:outline-2 focus-visible:outline-amber", detailed && "m-5 rounded-xl sm:m-8"]}>
+          {images[app.slug] && <Image src={images[app.slug]} alt={`${app.name} app preview`} width={640} class="aspect-[2/1] w-full object-contain" loading="lazy" />}
+        </a>
+        <div class:list={["flex flex-1 flex-col p-5", detailed ? "sm:p-8" : "sm:p-6"]}>
+          <Heading class:list={["font-display font-semibold text-ink", detailed ? "text-3xl sm:text-4xl" : "text-2xl"]}>{app.name}</Heading>
+          <p class="mt-2 text-base leading-6 text-muted">{detailed ? app.description : app.tagline}</p>
+          <ul class="mt-4 flex flex-wrap gap-2" aria-label={`${app.name} technologies`}>
+            {app.tags.map((tag) => <li class="rounded-full border border-border px-2.5 py-1 font-mono text-[10px] text-muted">{tag}</li>)}
+          </ul>
+          <div class="mt-auto flex flex-wrap items-center gap-4 pt-5 text-sm font-semibold">
+            {app.links.playStore && <a class="rounded-full bg-ink px-4 py-2 !text-paper transition hover:bg-ink/80 focus-visible:outline-2 focus-visible:outline-amber" href={app.links.playStore} target="_blank" rel="noopener noreferrer" aria-label={`Get ${app.name} on Google Play`}>Google Play &rarr;</a>}
+            <a class="text-amber underline underline-offset-4 hover:text-ink" href={appUrl(app)} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${app.name} website`}>Website &rarr;</a>
+          </div>
+        </div>
+      </article>

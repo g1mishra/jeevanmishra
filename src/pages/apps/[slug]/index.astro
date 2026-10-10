@@ -21,26 +21,14 @@ const gallery = (app.screenshots ?? []).flatMap((shot) => {
   return image ? [{ ...shot, image }] : [];
 });
 
-// Google reads this for the FAQ rich result; it has to mirror what is on the
-// page, so both render from the same data.
-const faqSchema = app.faq && {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: app.faq.map((item) => ({
-    "@type": "Question",
-    name: item.question,
-    acceptedAnswer: { "@type": "Answer", text: item.answer },
-  })),
-};
 ---
 
 <AppLayout
   app={app}
-  title={app.seo?.title ?? `${app.name} — ${app.tagline}`}
+  title={app.seo?.title ?? `${app.name} - ${app.tagline}`}
   description={app.seo?.description ?? app.description}
   ogImage={app.ogImage}
   canonical={`${appOrigin(app)}/`}
-  schemas={faqSchema ? [faqSchema] : []}
 >
   <main class="mx-auto w-full max-w-5xl px-5 pt-10 pb-4 sm:px-8 sm:pt-16">
     <section class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -179,7 +167,7 @@ const faqSchema = app.faq && {
     {
       app.faq && (
         <section class="mt-24 reveal">
-          <h2 class="font-display text-4xl font-bold text-ink sm:text-5xl">Questions</h2>
+          <h2 class="font-display text-4xl font-bold text-ink sm:text-5xl">Pachisi game questions</h2>
           <dl class="mt-8 space-y-4">
             {app.faq.map((item) => (
               <div class="rounded-2xl border border-border bg-card p-6">

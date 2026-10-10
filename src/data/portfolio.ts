@@ -26,6 +26,7 @@ export interface Experience {
   role: string;
   period: string;
   summary: string;
+  links?: Record<string, string>;
 }
 
 export interface ThirdParty {
@@ -56,6 +57,7 @@ export interface AppService extends ThirdParty {
 export interface AppPrivacy {
   effective: string;
   summary: string;
+  links?: Record<string, string>;
   collectsPersonalData: boolean;
   requiresAccount: boolean;
   worksOffline: boolean;
@@ -159,8 +161,8 @@ export interface Project {
 export const meta: Meta = {
   name: "Jeevan Kumar",
   tagline:
-    "I build products for startups, for myself, and occasionally for ideas that just won't leave me alone.",
-  subline: "Engineer by trade. Indie developer by choice. Based in India.",
+    "I build web, mobile, and AI-powered products for startups and ideas of my own.",
+  subline: "Full-stack software engineer working across React, Next.js, Node.js and Python. Building and shipping since 2020. Based in India.",
   availability: true,
   email: "g1mishra.dev@gmail.com",
   resumeUrl: "/resume.pdf",
@@ -194,42 +196,48 @@ export const modes: Mode[] = [
 
 export const experience: Experience[] = [
   {
-    company: "Freelance & Independent",
+    company: "Independent",
+    links: { JaapMitra: "https://jaapmitra.jeevanmishra.in", Saarthi: "https://trysaarthi.in/", Pachisi: "https://pachisi.jeevanmishra.in/", "Choghadiya Now": "https://choghadiyanow.com/" },
     role: "Software Engineer",
-    period: "2025–present",
-    summary:
-      "Delivered a patient and inventory management MVP for a US healthcare startup using React, TypeScript, Tailwind, React Query. Independently building and shipping JaapMitra, a spiritual utility app live on Play Store with offline-first architecture.",
+    period: "Nov 2025 - present",
+    summary: "Built and published JaapMitra, Saarthi and Pachisi, and launched Choghadiya Now. Own product design, architecture and releases. Delivered one freelance patient and inventory management MVP for a US healthcare startup in two months.",
   },
   {
     company: "BuildShip",
+    links: { BuildShip: "https://buildship.com/", Rowy: "https://www.rowy.io/" },
     role: "Software Engineer (Contract)",
-    period: "2025",
-    summary:
-      "Engineered 20+ production AI workflow templates (Gmail, Calendar, Linear, RAG systems) used by thousands of no-code developers to ship backends without writing code.",
+    period: "Apr - Nov 2025",
+    summary: "Built 20+ AI workflow templates integrating Gmail, Google Calendar and Linear. Implemented automated Rowy-to-BuildShip table migration and Bring Your Own Firebase setup.",
+  },
+  {
+    company: "ByteEat",
+    links: { ByteEat: "https://byteeat.vercel.app" },
+    role: "Co-Founder & Sole Developer",
+    period: "Dec 2024 - Mar 2025",
+    summary: "Built ByteEat, a restaurant ordering MVP with QR menus and real-time order management using Next.js, TypeScript, MongoDB and Prisma. Owned product design, architecture and delivery.",
   },
   {
     company: "EXPIA",
-    role: "Full-Stack Engineer",
-    period: "2022–2024",
-    summary:
-      "Built the Norg.ai chatbot dashboard from scratch in TypeScript and React, enabling self-serve AI model training. Also delivered the Next.js frontend for automatictechnology.com, a 25-year-old Australian hardware brand, integrated with Umbraco CMS.",
+    links: { "Norg.ai": "https://norg.ai", "Automatic Technology": "https://www.automatictechnology.com" },
+    role: "Software Engineer (React / Next.js)",
+    period: "Sep 2022 - Nov 2024",
+    summary: "Built the Norg.ai dashboard in React and TypeScript and a Next.js frontend integrated with Umbraco CMS for Automatic Technology. Worked within a team of 5-10 on feature delivery and sprint planning.",
   },
   {
     company: "Intellemo",
+    links: { Intellemo: "https://intellemo.com" },
     role: "Frontend Engineer",
-    period: "2022",
-    summary:
-      "Migrated the company site to Next.js SSR, tripling SEO visibility in a month. Shipped a form builder from scratch, two weeks ahead of schedule, earning Hero of the Month.",
+    period: "Mar - Sep 2022",
+    summary: "Migrated the Intellemo website to Next.js SSR, tripling SEO visibility within a month. Shipped a drag-and-drop form builder two weeks ahead of schedule, earning Hero of the Month, and fixed Konva.js rendering issues.",
   },
   {
     company: "Mobilicis / Mobiru India",
+    links: { "oruphones.com": "https://www.oruphones.com" },
     role: "Founding Engineer",
-    period: "2020–2022",
-    summary:
-      "Built a mobile price-comparison platform solo from scratch with React + Django, custom scrapers pulling real-time data from 10+ e-commerce sites. Co-launched oruphones.com, which processed 1,000+ trade-in valuations in its first phase.",
+    period: "Aug 2020 - Feb 2022",
+    summary: "Built a mobile price-comparison platform with React and Django, collecting prices from 10+ e-commerce platforms. Co-developed the oruphones.com MVP, which processed 1,000+ smartphone valuations during launch.",
   },
 ];
-
 export const apps: App[] = [
   {
     name: "JaapMitra",
@@ -266,18 +274,18 @@ export const apps: App[] = [
   {
     name: "Pachisi",
     slug: "pachisi",
-    tagline: "The Indian cowrie-shell board game, played by its real rules.",
+    tagline: "An offline Pachisi game for Android, with cowrie shells and local multiplayer.",
     description:
-      "Pachisi is the game Ludo was flattened out of, and this is the original: six cowrie shells instead of a die, castles instead of a protected home lane, pieces that pair up and travel as one. Play offline against AI opponents, on a board that keeps the rules the West left behind.",
+      "Play Pachisi on Android with six cowrie shells, safe castles and paired pieces. Challenge computer opponents offline or play with two or four people on one phone. Includes English and Hindi, guided lessons and saved matches.",
     seo: {
-      title: "Pachisi — the Indian original, played by its real rules",
+      title: "Pachisi Game for Android | Offline Play & Local Multiplayer",
       description:
-        "The game Ludo was flattened out of — Chaupar, Chausar, Pachisi. Six cowrie shells, castles, doubled pieces, and an exact count home. Free, offline, in English and हिन्दी.",
+        "Download Pachisi for Android. Play offline against computer opponents or with friends on one phone. Cowrie-shell rules, guided lessons, English and Hindi.",
     },
     lead:
-      "Pachisi is the game Ludo was flattened out of, and this is the original. Six cowrie shells instead of a die. Castles instead of a protected home lane. Pieces that pair up and travel as one. Play it offline against three levels of computer opponent, or pass the phone around for two or four players — on a board that keeps the rules the West left behind.",
+      "Pachisi brings the traditional Indian board game to your Android phone. Throw six cowrie shells, choose which pieces to move, and bring them home on an exact count. Safe castles and doubled pieces make each turn a choice between advancing, protecting a piece and capturing an opponent. Play against easy, medium or hard computer opponents, or share one phone with friends. Every game mode works offline.",
     tags: ["React Native", "Expo", "TypeScript"],
-    featured: false,
+    featured: true,
     status: "live",
     hosted: true,
     packageName: "com.g1mishra.pachisi",
@@ -325,38 +333,53 @@ export const apps: App[] = [
     ],
     sections: [
       {
-        heading: "How a throw works",
+        heading: "A Pachisi board game you can take anywhere",
+        lead: "Start a match on your phone without creating an account. Pachisi is free to download on Google Play and supported by ads. The board, computer opponents and lessons work without an internet connection, so you can play while travelling or away from Wi-Fi.",
+        bullets: [
+          "Play solo against the computer at easy, medium or hard difficulty. Choose the challenge when you start a match.",
+          "Share one device with two players, or play four-player matches in two teams of two. This is local multiplayer on the same phone, rather than online room play.",
+          "Switch between English and Hindi. Labels, lessons and game controls follow your selected language.",
+          "Leave a match and return later. The app keeps the board position and the current turn so you can continue your saved game.",
+        ],
+      },
+      {
+        heading: "Learn the rules on the board",
+        lead: "You do not need to know Pachisi before your first game. Five guided lessons introduce shell throws, castles, capturing, the route home and doubled pieces through moves on the board. Start with the lessons, then try an easy computer match to practise the decisions at your own pace.",
+        note: "Pachisi rules vary between households and regions. The rules below describe the version implemented in this app, so you can see how its throws, safe squares and paired pieces work before downloading.",
+      },
+      {
+        heading: "How to play Pachisi with cowrie shells",
         table: {
           columns: ["Shells landing mouth-up", "You move"],
           rows: [
             ["2, 3, 4, 5 or 6", "that many"],
-            ["1", "10 — throw again"],
-            ["0", "25 — the pachis the game is named for — throw again"],
+            ["1", "10  -  throw again"],
+            ["0", "25  -  the pachis the game is named for  -  throw again"],
           ],
         },
         note: "A 6, 10 or 25 is a grace: another throw, and a new pawn may enter. Throws stack up and are spent one at a time, each moving one pawn. Three identical graces in a row and the whole turn is wiped.",
       },
       {
-        heading: "What's inside",
+        heading: "Offline play, local multiplayer and guided lessons",
         bullets: [
-          "Six cowrie shells, thrown the way the game was actually played — no dice, no Ludo shortcuts.",
+          "Six cowrie shells, thrown the way the game was actually played  -  no dice, no Ludo shortcuts.",
           "The real ruleset: castles, grace throws, and doubled pieces that must move as a single unit.",
           "Offline computer opponents at three difficulties. No account, no internet, no lobby to wait for.",
-          "Two players or four on one phone, in classic teams — everyone's name and numbers turn to face their own side of the board.",
-          "A five-lesson course played on the real board, not a wall of text — shells, castles, capture, the road home, doubled pieces.",
+          "Two players or four on one phone, in classic teams  -  everyone's name and numbers turn to face their own side of the board.",
+          "A five-lesson course played on the real board, not a wall of text  -  shells, castles, capture, the road home, doubled pieces.",
           "English and हिन्दी.",
           "Save mid-match and pick it up exactly where you left it.",
           "Every colour also has its own shape, so the board reads without relying on colour.",
         ],
       },
       {
-        heading: "Isn't this just Ludo?",
-        lead: "Ludo is a Victorian simplification of Pachisi, patented in England in 1896 with most of the game taken out. Here's what came back:",
+        heading: "Pachisi and Ludo: what changes on the board?",
+        lead: "If you know Ludo, the cross-shaped board will look familiar. This app uses a Pachisi ruleset with cowrie-shell throws, safe castles and doubled pieces. These are the differences you will encounter while playing:",
         bullets: [
-          "Shells, not a die. Six cowries give 2–6, 10 and 25 — a spread no die can make.",
+          "Shells, not a die. Six cowries give 2–6, 10 and 25  -  a spread no die can make.",
           "No protected home lane. Ludo gives you a corridor nothing can touch; Pachisi gives you castles instead.",
           "Castles. Marked squares where a pawn simply cannot be taken.",
-          "Doubled pieces. Two of your pawns on one square lock together and move as one — and only a pair or better can take them.",
+          "Doubled pieces. Two of your pawns on one square lock together and move as one  -  and only a pair or better can take them.",
           "An exact count home. You cannot overshoot; the last square before home is a trap that no throw can leave.",
           "Counter-clockwise, the way it has always been played.",
         ],
@@ -379,7 +402,7 @@ export const apps: App[] = [
       {
         question: "Is there online multiplayer?",
         answer:
-          "Not yet. Room play — a private room you open and share with a friend, so you can play from different phones — is the next thing I'm building. It has no date yet; the Play Store listing is where it will turn up first.",
+          "Not yet. Room play  -  a private room you open and share with a friend, so you can play from different phones  -  is the next thing I'm building. It has no date yet; the Play Store listing is where it will turn up first.",
       },
       {
         question: "I don't know the rules.",
@@ -388,7 +411,7 @@ export const apps: App[] = [
       },
       {
         question: "Can I play in Hindi?",
-        answer: "Yes. The game is translated in full — English and हिन्दी.",
+        answer: "Yes. The game is translated in full  -  English and हिन्दी.",
       },
       {
         question: "Does it save my game?",
@@ -398,7 +421,7 @@ export const apps: App[] = [
       {
         question: "How hard are the computer opponents?",
         answer:
-          "Three strengths — easy, medium and hard — picked when you start a new game.",
+          "Three strengths  -  easy, medium and hard  -  picked when you start a new game.",
       },
       {
         question: "I find the colours hard to tell apart.",

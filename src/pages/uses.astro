@@ -2,55 +2,40 @@
 import Layout from "../layouts/Layout.astro";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import PageIntro from "../components/PageIntro.astro";
+const groups = [
+  { title: "Development stack", items: [
+    ["Web", "TypeScript, React, Next.js, Astro"], ["Mobile", "React Native, Expo"],
+    ["Styling", "Tailwind CSS"], ["Backend & data", "Node.js, Python, Django, MongoDB, SQLite"],
+  ] },
+  { title: "Editors & tools", items: [
+    ["Editors & AI", "Codex, Claude Code, VS Code, Cursor"], ["Source control", "GitHub"],
+    ["Hosting", "Vercel for personal web projects"], ["Design", "Figma"],
+  ] },
+  { title: "Everyday gear", items: [["Phone", "iPhone 15 Pro Max"]],
+    note: "A simple setup for writing code, recording ideas, and testing what I build." },
+];
 ---
-
-<Layout title="Uses - Jeevan Kumar" description="Tools, tech stack, and gear Jeevan Kumar uses daily for software development and indie building.">
-	<Nav />
-	
-	<main class="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-20" transition:animate="slide">
-		<a class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-amber hover:text-amber-light transition-colors" href="/">← Back home</a>
-		
-		<h1 class="mt-10 font-display text-6xl font-semibold leading-none sm:text-7xl text-ink reveal">Uses</h1>
-		<p class="mt-6 text-xl leading-8 text-muted reveal" style="animation-delay: 0.1s">
-			The daily stack, tools, and gear I keep close while building software and small products.
-		</p>
-
-		<div class="mt-16 space-y-16 text-lg leading-8 reveal" style="animation-delay: 0.2s">
-			<section class="group">
-				<h2 class="font-display text-3xl font-semibold text-ink flex items-center gap-4">
-					<span class="text-amber">01.</span> Daily Stack
-				</h2>
-				<ul class="mt-6 list-disc space-y-3 pl-5 text-muted/90 group-hover:text-ink/90 transition-colors duration-500">
-					<li><strong class="text-ink font-medium">Core:</strong> TypeScript, React, Next.js, Astro</li>
-					<li><strong class="text-ink font-medium">Mobile:</strong> React Native, Expo</li>
-					<li><strong class="text-ink font-medium">Styling:</strong> Tailwind CSS for interfaces that need to ship cleanly</li>
-					<li><strong class="text-ink font-medium">Backend:</strong> Node.js, Python, Django, MongoDB, SQLite</li>
-				</ul>
-			</section>
-
-			<section class="group">
-				<h2 class="font-display text-3xl font-semibold text-ink flex items-center gap-4">
-					<span class="text-amber">02.</span> IDE & Tools
-				</h2>
-				<ul class="mt-6 list-disc space-y-3 pl-5 text-muted/90 group-hover:text-ink/90 transition-colors duration-500">
-					<li><strong class="text-ink font-medium">Editors & AI:</strong> CodeX, Claude Code, VS Code, Cursor</li>
-					<li><strong class="text-ink font-medium">Version Control:</strong> GitHub for source control and project memory</li>
-					<li><strong class="text-ink font-medium">Hosting:</strong> Vercel for personal web projects</li>
-					<li><strong class="text-ink font-medium">Design:</strong> Figma when the product needs a cleaner first pass</li>
-				</ul>
-			</section>
-
-			<section class="group">
-				<h2 class="font-display text-3xl font-semibold text-ink flex items-center gap-4">
-					<span class="text-amber">03.</span> Gear
-				</h2>
-				<ul class="mt-6 list-disc space-y-3 pl-5 text-muted/90 group-hover:text-ink/90 transition-colors duration-500">
-					<li><strong class="text-ink font-medium">Phone:</strong> iPhone 15 Pro Max</li>
-					<li class="text-muted italic">A plain setup tuned for writing code, recording ideas, and keeping momentum.</li>
-				</ul>
-			</section>
-		</div>
-	</main>
-	
-	<Footer />
+<Layout title="Uses - Jeevan Kumar" description="The development stack, editors, tools and gear Jeevan Kumar uses to build web and mobile products.">
+  <Nav />
+  <main class="mx-auto w-full max-w-6xl px-5 pb-16 sm:px-8" transition:animate="slide">
+    <PageIntro title="What I build with." description="The languages, tools, and everyday gear behind my web and mobile products." />
+    <div class="grid gap-5 py-12 sm:py-16 md:grid-cols-2 lg:grid-cols-3">
+      {groups.map((group) => (
+        <section class="rounded-2xl border border-border bg-card p-5 sm:p-6">
+          <h2 class="font-display text-2xl font-semibold text-ink">{group.title}</h2>
+          <dl class="mt-6 divide-y divide-border">
+            {group.items.map(([label, value]) => (
+              <div class="py-4 first:pt-0">
+                <dt class="font-mono text-xs text-muted">{label}</dt>
+                <dd class="mt-1 text-base leading-6 text-ink">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          {group.note && <p class="mt-4 border-t border-border pt-4 text-sm leading-6 text-muted">{group.note}</p>}
+        </section>
+      ))}
+    </div>
+  </main>
+  <Footer />
 </Layout>

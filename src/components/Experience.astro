@@ -1,37 +1,36 @@
 ---
 import { experience, meta } from "../data/portfolio";
----
+import type { Experience } from "../data/portfolio";
 
+// Keep descriptions as plain data; turn only named, verified destinations into links.
+function summaryParts(item: Experience) {
+  const links = item.links ?? {};
+  const names = Object.keys(links).sort((a, b) => b.length - a.length);
+  if (!names.length) return [{ text: item.summary, href: undefined }];
+  const escaped = names.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return item.summary.split(new RegExp(`(${escaped.join("|")})`, "g"))
+    .filter(Boolean).map((text) => ({ text, href: links[text] }));
+}
+---
 <section id="work" class="reveal scroll-mt-24 border-b border-border py-16 sm:py-24">
-  <div class="mb-12 flex items-end justify-between gap-6">
-    <h2 class="font-display text-4xl sm:text-5xl font-semibold text-ink">Work</h2>
-    <a
-      class="hidden text-sm font-semibold text-amber underline decoration-amber/40 underline-offset-4 transition hover:decoration-amber sm:inline"
-      href={meta.resumeUrl}
-    >
-      Full resume →
-    </a>
+  <div class="mb-8 flex items-end justify-between gap-6">
+    <h2 class="font-display text-4xl font-semibold text-ink sm:text-5xl">Work</h2>
+    <a class="text-sm font-semibold text-amber underline decoration-amber/40 underline-offset-4 hover:decoration-amber" href={meta.resumeUrl}>Full resume &rarr;</a>
   </div>
   <div class="divide-y divide-border">
-    {
-      experience.map((item, i) => (
-        <article class="group grid gap-3 py-6 sm:grid-cols-[1.2fr_2fr_auto] sm:items-baseline transition-colors hover:bg-card-hover -mx-4 px-4 rounded-xl" style={`animation-delay: ${0.1 * i}s`}>
-          <div>
-            <h3 class="text-lg font-semibold text-ink transition-colors group-hover:text-amber">{item.company}</h3>
-            <p class="text-sm text-muted">{item.role}</p>
-          </div>
-          <p class="text-lg leading-7 text-ink/80">{item.summary}</p>
-          <p class="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-muted w-28 sm:text-right mt-2 sm:mt-0">
-            {item.period}
-          </p>
-        </article>
-      ))
-    }
+    {experience.map((item) => (
+      <article class="-mx-4 grid gap-4 rounded-xl px-4 py-6 transition-colors hover:bg-card-hover md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-8">
+        <div class="min-w-0">
+          <h3 class="text-lg font-semibold text-ink">{item.company}</h3>
+          <p class="mt-1 text-sm text-muted">{item.role}</p>
+          <p class="mt-2 whitespace-nowrap font-mono text-xs text-muted">{item.period}</p>
+        </div>
+        <p class="min-w-0 text-base leading-7 text-ink/80 sm:text-lg">
+          {summaryParts(item).map(({ text, href }) => href ? (
+            <a href={href} target="_blank" rel="noopener noreferrer" class="font-medium !text-ink underline decoration-amber/60 underline-offset-4 transition-colors hover:!text-amber focus-visible:outline-2 focus-visible:outline-amber">{text}</a>
+          ) : text)}
+        </p>
+      </article>
+    ))}
   </div>
-  <a
-    class="mt-8 inline-flex text-sm font-semibold text-amber underline decoration-amber/40 underline-offset-4 transition hover:decoration-amber sm:hidden"
-    href={meta.resumeUrl}
-  >
-    Full resume →
-  </a>
 </section>

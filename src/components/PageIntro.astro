@@ -1,0 +1,9 @@
+---
+interface Props { title: string; description: string; }
+const { title, description } = Astro.props;
+---
+<header class="border-y border-border py-12 sm:py-20">
+  <a class="text-sm font-semibold text-amber underline underline-offset-4 hover:text-ink" href="/">&larr; Back home</a>
+  <h1 class="mt-8 font-display text-[clamp(2.75rem,6vw,5rem)] font-semibold leading-[1.05] text-ink">{title}</h1>
+  <p class="mt-6 max-w-2xl text-xl leading-8 text-muted sm:text-2xl sm:leading-9">{description}</p>
+</header>
