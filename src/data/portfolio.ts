@@ -207,7 +207,7 @@ export const experience: Experience[] = [
     links: { BuildShip: "https://buildship.com/", Rowy: "https://www.rowy.io/" },
     role: "Software Engineer (Contract)",
     period: "Apr - Nov 2025",
-    summary: "Built 20+ AI workflow templates integrating Gmail, Google Calendar and Linear. Implemented automated Rowy-to-BuildShip table migration and Bring Your Own Firebase setup.",
+    summary: "Built 20+ backend workflow templates integrating Gmail, Google Calendar, Linear and other APIs for BuildShip's automation platform. Automated Rowy-to-BuildShip table migration and Bring Your Own Firebase setup.",
   },
   {
     company: "ByteEat",
